@@ -1,0 +1,34 @@
+version: '3.3'
+services:
+  gitlab:
+    image: 'twang2218/gitlab-ce-zh:11.1.4'
+    container_name: gitlab-ce-11.1.4
+    restart: always
+    hostname: txl.gitlab.io
+    environment:
+      TZ: Asia/Shanghai
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://txl.gitlab.io:80'
+        gitlab_rails['time_zone'] = 'Asia/Shanghai'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+        unicorn['port'] = 8888
+        nginx['listen_port'] = 80
+        # 需要配置到 gitlab.rb 中的配置可以在这里配置，每个配置一行，注意缩进。
+        # 比如下面的电子邮件的配置：
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_address'] = "623911519@qq.com"
+        gitlab_rails['smtp_port'] = 465
+        gitlab_rails['smtp_user_name'] = "623911519@qq.com"
+        gitlab_rails['smtp_password'] = "/t-x-l/942410"
+        gitlab_rails['smtp_authentication'] = "login"
+        gitlab_rails['smtp_enable_starttls_auto'] = true
+        gitlab_rails['smtp_tls'] = true
+        gitlab_rails['gitlab_email_from'] = '623911519@qq.com'
+    ports:
+      - '80:80'
+      - '8443:443'
+      - '2222:22'
+    volumes:
+      - /home/tianxuanling/gitlab/config:/etc/gitlab
+      - /home/tianxuanling/gitlab/data:/var/opt/gitlab
+      - /home/tianxuanling/gitlab/logs:/var/log/gitlab
