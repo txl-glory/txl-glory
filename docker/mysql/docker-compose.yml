@@ -1,0 +1,23 @@
+version: '3.3'
+services:
+  db:
+    image: mysql
+    container_name: mysql
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: shanhong
+    command:
+      --character-set-server=utf8
+      --max_connections=2000
+    volumes:
+      - /home/tianxuanling/mysql/data:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - 8080:8080
