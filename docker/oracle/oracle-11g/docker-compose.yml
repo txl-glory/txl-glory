@@ -1,0 +1,17 @@
+version: '3.3'
+services:
+  oracle-11g:
+    image: loliconneko/oracle-ee-11g
+    container_name: oracle-11g
+    privileged: true
+    restart: always
+    environment:
+      sid: "EE"
+      service name: "orcl"
+      WEB_CONSOLE: "false"
+      username: "system"
+      password: "oracle"
+    ports:
+      - 15211:1521
+    volumes:
+      - ./data:/u01/app/oracle
