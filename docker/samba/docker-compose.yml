@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  oracle-11g:
+    image: dperson/samba
+    container_name: samba
+    restart: always
+    ports:
+      - 139:139
+      - 445:445
+    volumes:
+      - ./data:/mount
