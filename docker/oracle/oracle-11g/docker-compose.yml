@@ -6,11 +6,10 @@ services:
     privileged: true
     restart: always
     environment:
-      sid: "EE"
-      service name: "orcl"
-      WEB_CONSOLE: "false"
-      username: "system"
-      password: "oracle"
+      ORACLE_SID: "EE"
+      service name: "ORCL"
+      WEB_CONSOLE: false
+      DBCA_TOTAL_MEMORY: "1024"
     ports:
       - 15211:1521
     volumes:
