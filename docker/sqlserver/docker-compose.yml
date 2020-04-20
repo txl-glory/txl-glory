@@ -1,0 +1,14 @@
+version: '3.3'
+services:
+  sqlserver:
+    image: microsoft/mssql-server-linux
+    container_name: mssql-server
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+        #SA用户密码
+      - SA_PASSWORD=shanhong
+    ports:
+      - 1433:1433
+    volumes:
+      - ./mssql:/var/opt/mssql
