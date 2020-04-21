@@ -4,9 +4,14 @@ services:
     image: dperson/samba
     container_name: dperson-samba
     restart: always
+    environment:
+      TZ: Asia/Shanghai
     ports:
       - 139:139
       - 445:445
     volumes:
       - ./data:/mount
-    command: '-u "root;123456" -s "www;/mount/;yes;no;no;all;none"'
+    command: '-u "root;shanhong" -s "资料共享;/mount/;yes;yes;yes;all;none" -s "public;/mount/;yes;no;no;all;none"'
+
+# 最后一行以分号为间隔，分别是：
+# 共享文件夹的名称；共享在samba容器中的路径；yes共享名称对所有工作组用户可见；no不是只读（也就是说可写）；no不允许guest用户；指定共享的所有权用户；指定共享的超级用户；指定具有写权限的用户；
