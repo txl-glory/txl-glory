@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  tomcat:
+    image: tomcat:8.5.54-jdk8-openjdk
+    container_name: tomcat-8.5.54
+    restart: always
+    ports:
+      - 9090:8080
+    volumes:
+      - ./webapps:/usr/local/tomcat/webapps
+      - ./conf:/usr/local/tomcat/conf
