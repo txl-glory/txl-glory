@@ -1,7 +1,7 @@
 version: '3.3'
 services:
   tomcat:
-    image: tomcat:8.5.54-jdk8-openjdk
+    image: tomcat:8.5.54-jdk8
     container_name: tomcat-8.5.54
     restart: always
     ports:
