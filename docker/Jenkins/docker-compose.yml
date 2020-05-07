@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+  zentao:
+    image: jenkins:2.60.3
+    container_name: jenkins-2.60.3
+    restart: always
+    environment:
+      TZ: "Asia/Shanghai"
+    ports:
+      - 9003:8080
+      - 50000:50000
+    volumes:
+      - ./data/jenkins_home:/var/jenkins_home
