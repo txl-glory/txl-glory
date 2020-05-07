@@ -1,0 +1,16 @@
+version: '3.3'
+services:
+  zentao:
+    image: idoop/zentao:12.3
+    container_name: zentao-server-12.3
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+      ADMINER_USER: "root"
+      ADMINER_PASSWD: "shanhong"
+      BIND_ADDRESS: "192.168.0.200"
+      SMTP_HOST: "smtp.exmail.qq.com:163.177.90.125"
+    ports:
+      - '80:80'
+    volumes:
+      - ./data:/data/zbox/:/opt/zbox/
