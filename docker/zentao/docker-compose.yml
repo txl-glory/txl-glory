@@ -5,10 +5,10 @@ services:
     container_name: zentao-server-12.3
     restart: always
     environment:
-      TZ: Asia/Shanghai
+      TZ: "Asia/Shanghai"
       ADMINER_USER: "root"
       ADMINER_PASSWD: "shanhong"
-      BIND_ADDRESS: "192.168.0.200"
+      BIND_ADDRESS: "false"
       SMTP_HOST: "smtp.exmail.qq.com:163.177.90.125"
     ports:
       - '80:80'
