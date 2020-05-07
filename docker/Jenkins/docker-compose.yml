@@ -1,6 +1,6 @@
 version: '3.3'
 services:
-  zentao:
+  jenkins:
     image: jenkins:2.60.3
     container_name: jenkins-2.60.3
     restart: always
