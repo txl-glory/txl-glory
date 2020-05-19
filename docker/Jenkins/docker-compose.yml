@@ -4,6 +4,7 @@ services:
     image: jenkins:2.60.3
     container_name: jenkins-2.60.3
     restart: always
+    privileged: true
     environment:
       TZ: "Asia/Shanghai"
     ports:
