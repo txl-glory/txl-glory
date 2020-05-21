@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE twns PUBLIC "-//TONGTECH,CO.LTD" "http://www.tongtech.com/dtds/tongweb-config.dtd">
+<twns application-root="${tongweb.root}/deployment" log-root="${tongweb.root}/logs">
+  <deployments>
+    <enterprise-app access-enabled="true" deploy-order="100" disable-timeout-in-minutes="30" enabled="true" is-availability="false" is-directory="false" name="MEjbApp" object-type="system-all" source-path="${tongweb.root}/deployment/modules/MEjbApp" vs-names="server"/>
+    <enterprise-app access-enabled="true" deploy-order="100" disable-timeout-in-minutes="30" enabled="true" is-availability="false" is-directory="false" name="__ejb_container_timer_app" object-type="system-all" source-path="${tongweb.root}/deployment/modules/__ejb_container_timer_app" vs-names="server"/>
+    <web-app access-enabled="true" context-root="/web1" deploy-order="100" disable-timeout-in-minutes="30" enabled="true" is-availability="false" is-directory="true" list-dir="false" name="adminapp" object-type="system-admin" source-path="${tongweb.root}/applications/adminapp/adminapp_war" vs-names="admin">
+      <!-- System Web Module - DO NOT DELETE! -->
+    </web-app>
+    <web-app access-enabled="true" context-root="twns" deploy-order="100" disable-timeout-in-minutes="30" enabled="true" is-availability="false" is-directory="true" list-dir="false" name="twns" object-type="system-admin" source-path="${tongweb.root}/applications/twns" vs-names="admin">
+      <!-- System Web Module - DO NOT DELETE! -->
+    </web-app>
+    <web-app access-enabled="true" context-root="gm" deploy-order="100" disable-timeout-in-minutes="30" enabled="true" is-availability="false" is-directory="true" list-dir="false" name="poseidon" object-type="system-admin" source-path="${tongweb.root}/applications/poseidon" vs-names="admin">
+      <!-- Cluster System Web Module - DO NOT DELETE! -->
+    </web-app>
+    <web-app access-enabled="true" context-root="/__wstx-services" deploy-order="100" disable-timeout-in-minutes="30" enabled="true" is-availability="false" is-directory="true" list-dir="false" name="WSTXServices" object-type="system-all" source-path="${tongweb.root}/applications/wstx-services"/>
+    <web-app access-enabled="true" context-root="default" deploy-order="100" disable-timeout-in-minutes="30" enabled="true" is-availability="false" is-directory="false" list-dir="false" name="default" object-type="user" source-path="${tongweb.root}/deployment/modules/default" vs-names="server"/>
+    <connector-app deploy-order="100" enabled="true" is-directory="true" name="genericra" object-type="system-all" source-path="${tongweb.root}/applications/genericra"/>
+  </deployments>
+  <jdbc-data-source enabled="true" jndi-name="DefaultDataSource" pool-name="default" type="user"/>
+  <jdbc-connection-pool close-all-connections="false" connection-associate-with-thread="false" connection-leaktimeout="0" connection-max-reuse-count="0" connection-return-to-pool="false" datasource-classname="org.apache.derby.jdbc.EmbeddedXADataSource" idle-timeout="300" isolated="true" jdbc-objects-is-wrapped="false" lazy-association="false" lazy-enlist="false" match-connections="false" max-pool-size="32" min-pool-size="8" name="__TimerPool" non-component-caller="false" non-transactional-connections="false" pool-resize-number="2" resource-type="javax.sql.XADataSource" retry-create-count="0" retry-create-interval="10" statement-cache-size="0" statement-timeout="-1" take-connection-timeout="60000" track-statements="false" validate="true" validate-period="0" validation-way="auto-commit">
+    <property name="databaseName" value="${tongweb.root}/javadb/databases/ejbtimer"/>
+  </jdbc-connection-pool>
+  <jdbc-connection-pool close-all-connections="false" connection-associate-with-thread="false" connection-leaktimeout="0" connection-max-reuse-count="0" connection-return-to-pool="false" datasource-classname="com.mysql.jdbc.Driver" idle-timeout="0" isolated="false" jdbc-objects-is-wrapped="false" lazy-association="false" lazy-enlist="false" match-connections="false" max-pool-size="32" min-pool-size="8" name="default" non-component-caller="false" non-transactional-connections="false" pool-resize-number="2" resource-type="javax.sql.DataSource" retry-create-count="0" retry-create-interval="10" statement-cache-size="0" statement-for-validation="SELECT 1" statement-timeout="-1" take-connection-timeout="60000" track-statements="false" validate="true" validate-period="0" validation-way="custom">
+    <property name="connectionURL" value="jdbc:mysql://127.0.0.1:3306/eos720"/>
+    <property name="user" value="root"/>
+    <property name="password" value="{RSA}Cg!Qr!8JtAO4D"/>
+    <property name="classpath" value="D:\Primeton\eos720T\ide\eclipse\dropins\PLATFORM_7.2.0.0\plugins\com.primeton.studio.server.library_7.1.0.0\server\3rd\jdbc\mysql-connector-java-3.1.12-bin.jar"/>
+  </jdbc-connection-pool>
+  <resource-adapter connector-module-name="genericra" type="user">
+    <property name="SupportsXA" value="false"/>
+    <property name="RMPolicy" value="OnePerPhysicalConnection"/>
+    <property name="LogLevel" value="INFO"/>
+    <property name="ProviderIntegrationMode" value="jndi"/>
+    <property name="JndiProperties" value="java.naming.factory.initial=com.sun.jndi.fscontext.RefFSContextFactory,java.naming.provider.url=file:${tongweb.root}/activemq/conf"/>
+  </resource-adapter>
+  <server dynamic-reconfiguration-enabled="true" name="server">
+    <iiop-service client-auth="false" max-connections="1024" max-message-size="1024" thread-pool-id="thread-pool-1">
+      <listener address="0.0.0.0" enabled="true" id="orb-listener-1" port="5100" ssl-enabled="false"/>
+    </iiop-service>
+    <admin-config app-validation="false" autodeploy-dir="${tongweb.root}/autodeploy" autodeploy-enabled="true" check-deploy-dir-interval="2" dtd-validation="full" dynamic-reload-enabled="true" dynamic-reload-interval="2" jsp-precompile="false" session-timeout="60"/>
+    <jmx-service system-jmx-connector-name="system">
+      <!-- The JSR 160 "system-jmx-connector" -->
+      <jmx-connector accept-all="false" address="0.0.0.0" auth-realm-name="admin-realm" enabled="true" name="system" port="7200" protocol="rmi_jrmp">
+        <property name="client-hostname" value="localhost"/>
+      </jmx-connector>
+      <!-- The JSR 160 "system-jmx-connector" -->
+    </jmx-service>
+    <web-container jsp-development="true" parameter-encoding="UTF-8" response-encoding="UTF-8">
+      <access-log format="%client.name% %auth-user-name% %datetime% %request% %status% %response.length%" rotation-enabled="true" rotation-interval-in-minutes="15" rotation-policy="time" rotation-suffix="yyyy-MM-dd"/>
+      <http-listener acceptor-threads="1" address="0.0.0.0" blocking-enabled="false" default-virtual-server="server" enabled="true" family="inet" id="http-listener-1" port="8080" security-enabled="false" server-name="" xpowered-by="false">
+        <advance comet-support="false" rcm-support="false" recycle-objects="true" use-nio-direct-bytebuffer="false"/>
+      </http-listener>
+      <http-listener acceptor-threads="1" address="0.0.0.0" blocking-enabled="true" default-virtual-server="admin" enabled="true" family="inet" id="admin-listener" max-threads="10" port="9060" security-enabled="false" server-name="" xpowered-by="false">
+        <advance comet-support="false" rcm-support="false" recycle-objects="true" use-nio-direct-bytebuffer="false"/>
+      </http-listener>
+      <virtual-server hosts="${tongweb.hostName}" http-listeners="http-listener-1" id="server" log-file="${tongweb.root}/logs/server.log" state="on">
+        <http-access-log access-log-buffer-size="4096" access-log-write-interval="10" access-logging-enabled="false" iponly="true" log-directory="${tongweb.root}/logs/access"/>
+        <sso sso-enabled="false"/>
+      </virtual-server>
+      <virtual-server hosts="${tongweb.hostName}" http-listeners="admin-listener" id="admin" log-file="${tongweb.root}/logs/server.log" state="on">
+        <http-access-log access-log-buffer-size="4096" access-log-write-interval="10" access-logging-enabled="false" iponly="true" log-directory="${tongweb.root}/logs/access"/>
+        <sso sso-enabled="false"/>
+      </virtual-server>
+      <request-processing header-buffer-length-in-bytes="8192" initial-thread-count="5" request-timeout-in-seconds="30" thread-count="200" thread-increment="5"/>
+      <keep-alive max-connections="250" thread-count="1" timeout-in-seconds="30"/>
+      <connection-pool max-pending-count="4096" queue-size-in-bytes="4096" receive-buffer-size-in-bytes="4096" send-buffer-size-in-bytes="8192"/>
+      <options allow-trace="false" default-response-type="AttributeDeprecated" default-type="text/html; charset=iso-8859-1" dns-lookup-enabled="false" forced-response-type="AttributeDeprecated" forced-type="text/html; charset=iso-8859-1" ssl-enabled="true" tcp-no-delay="true" version="HTTP/1.1"/>
+      <http-file-cache file-caching-enabled="true" file-transmission-enabled="false" globally-enabled="false" hash-init-size="0" max-age-in-seconds="30" max-files-count="1024" medium-file-size-limit-in-bytes="537600" medium-file-space-in-bytes="10485760" small-file-size-limit-in-bytes="2048" small-file-space-in-bytes="1048576"/>
+      <web-container-availability availability-enabled="true" ee-builder-path="com.tongweb.advance.web.initialization" http-session-store-pool-name="jdbc/hastore" persistence-frequency="web-method" persistence-scope="session" persistence-type="replicated" sso-failover-enabled="false" stale-session-checking-enabled="false" uuid-impl-class="com.tongweb.util.uuid.UuidGeneratorImpl"/>
+      <session-config session-file-name=""/>
+    </web-container>
+    <ejb-container commit-option="B" session-store="${tongweb.root}/session-store">
+      <pool idle-timeout="600" max-size="32" min-size="0" resize-quantity="8"/>
+      <cache idle-timeout="600" max-size="512" removal-policy="nru" removal-timeout="5400" resize-quantity="32"/>
+      <timer-service delivery-interval="7000" max-redeliveries="1" redelivery-interval="5000"/>
+      <mdb idle-timeout="600" max-size="32" min-size="0" resize-quantity="8"/>
+    </ejb-container>
+    <log-service file="${tongweb.root}/logs/server.log" log-rotation-limit-in-bytes="50000000" log-rotation-timelimit-in-minutes="0">
+      <module-log-levels admin="INFO" classloader="INFO" cluster="INFO" cmp="INFO" configuration="INFO" connector="INFO" corba="INFO" deployment="INFO" ejb-container="INFO" javamail="INFO" jaxr="INFO" jaxrpc="INFO" jdo="INFO" jms="INFO" jta="INFO" jts="INFO" mdb-container="INFO" naming="INFO" root="INFO" saaj="INFO" security="INFO" self-management="INFO" server="INFO" systemout="INFO" verifier="INFO" web-container="INFO"/>
+    </log-service>
+    <security-service audit-enabled="false" audit-modules="default" default-principal-to-role-mapping-enabled="false" default-realm="file" jacc="default">
+      <auth-realm classname="com.tongweb.security.auth.realm.file.FileRealm" name="admin-realm">
+        <file-realm file="${tongweb.root}/config/security/admin-keyfile"/>
+      </auth-realm>
+      <auth-realm classname="com.tongweb.security.auth.realm.file.FileRealm" name="twns-realm">
+        <file-realm file="${tongweb.root}/config/security/twns-keyfile"/>
+      </auth-realm>
+      <auth-realm classname="com.tongweb.security.auth.realm.file.FileRealm" name="master-realm">
+        <file-realm file="${tongweb.root}/config/security/master-keyfile"/>
+      </auth-realm>
+      <auth-realm classname="com.tongweb.security.auth.realm.file.FileRealm" name="file">
+        <file-realm file="${tongweb.root}/config/security/keyfile"/>
+      </auth-realm>
+      <auth-realm classname="com.tongweb.security.auth.realm.certificate.CertificateRealm" name="certificate">
+        </auth-realm>
+      <jacc-provider name="default" policy-configuration-factory-provider="com.tongweb.security.provider.PolicyConfigurationFactoryImpl" policy-provider="com.tongweb.security.provider.PolicyWrapper">
+        <property name="repository" value="${tongweb.root}/supported/policy"/>
+      </jacc-provider>
+      <audit-module classname="com.tongweb.security.Audit" enabled="false" name="default"/>
+    </security-service>
+    <transaction-service automatic-recovery="false" recovery-decision="rollback" retry-timeout-in-seconds="600" timeout-in-seconds="0" tx-log-dir="${tongweb.root}/logs"/>
+    <monitoring-service>
+      <module-monitoring-levels ajp-connector="OFF" connector-connection-pool="OFF" connector-service="OFF" ejb-container="OFF" http-connector="OFF" jdbc-connection-pool="OFF" jms-service="OFF" jvm="OFF" orb="OFF" thread-pool="OFF" transaction-service="OFF" web-container="OFF"/>
+    </monitoring-service>
+    <diagnostic-service capture-app-dd="true" capture-install-log="true" capture-system-info="true" compute-checksum="true" max-log-entries="500" min-log-level="INFO" verify-config="true"/>
+    <high-availability-database db-check-enabled="false" db-check-interval="5" enabled="true" lifecycle-enabled="false"/>
+    <thread-pools>
+      <thread-pool idle-thread-timeout-in-seconds="120" max-thread-pool-size="200" min-thread-pool-size="0" thread-pool-id="thread-pool-1"/>
+    </thread-pools>
+    <startup-classes>
+	  </startup-classes>
+    <cluster check-interval="2000" check-max-tries="3" check-socket-port="9000" check-socket-timeout="10000" check-timeout="1500" enabled="false" multicast-address="228.8.7.9" multicast-port="34957" name="cluster1" query-timeout="5000"/>
+  </server>
+</twns>

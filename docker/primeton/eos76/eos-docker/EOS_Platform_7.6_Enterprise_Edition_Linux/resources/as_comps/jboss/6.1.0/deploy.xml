@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>
+	<!--
+	 | 1. 删除jar,增加jar
+	 | 2. 复制jboss-scanning.xml
+	 -->
+
+	<echo message="^_^_^_^_^_^_^_^_^_^_^_^: ${__WAR_DIR}"/>	
+	
+	<copyfile src="${INSTALL_ROOT}/resources/as_comps/jboss/${APP_SERVER_VERSION}/cglib-2.1.3.jar" dest="${__WAR_DIR}/WEB-INF/lib/cglib-2.1.3.jar" overwrite="true"/>
+	<delete file="${__WAR_DIR}/WEB-INF/lib/xalan-2.5.0.jar"/>
+	<delete file="${__WAR_DIR}/WEB-INF/lib/stax-api-1.0.1.jar"/>
+	<delete file="${__WAR_DIR}/WEB-INF/lib/jaxen-1.1.1.jar"/>
+	<delete file="${__WAR_DIR}/WEB-INF/lib/jdom-1.0.jar"/>
+	<delete file="${__WAR_DIR}/WEB-INF/lib/dom4j-1.6.1.jar"/>
+	<delete file="${__WAR_DIR}/WEB-INF/lib/bcprov-jdk15-1.41.0.jar"/>
+	
+	
+	<copyfile src="${INSTALL_ROOT}/resources/as_comps/jboss/${APP_SERVER_VERSION}/jboss-scanning.xml" dest="${__WAR_DIR}/WEB-INF/jboss-scanning.xml" overwrite="true"/>
+</deploy>

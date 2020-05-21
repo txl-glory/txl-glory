@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>
+	<if>
+    	<equals arg1="${IS_DEPLOY_GOVERNOR}" arg2="true"/>
+    	<then>
+    		<echo message="......create appconfig dir for governor"/>
+			<action name="create appconfig dir" classname="com.primeton.installer.platform.action.CreateAppcfgDir" desc="Create App Config dir" scale="10" strategy="ignore">
+				<parameter name="EXTERNAL_CONFIG_DIR" value="${INSTALL_DIR}/apps_config"/>
+				<parameter name="APP_NAME" value="governor"/>
+				<parameter name="IP" value="${USER_IP}"/>
+				<parameter name="PORT" value="6299"/>
+			</action>
+
+			<delete dir="${TEMP_DIR}/governor.war"/>
+			
+			<!-- 部署EOS部分 -->
+			<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/server/eos-default.war to ${TEMP_DIR}/governor.war"/>
+			<unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/eos-default.war" dest="${TEMP_DIR}/governor.war" scale="15"/>
+			<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/governor/eos-governor.war to ${TEMP_DIR}/governor.war"/>
+			<unzip src="${INSTALL_ROOT}/resources/base_comps/product/governor/eos-governor.war" dest="${TEMP_DIR}/governor.war" scale="2"/>	
+			
+			<!-- 部署BPS部分 -->
+			<if>
+				<equals arg1="${IS_DEPLOY_BPS}" arg2="true"/>
+				<then>
+					<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/governor/bps-governor.war to ${TEMP_DIR}/governor.war"/>
+					<unzip src="${INSTALL_ROOT}/resources/base_comps/product/governor/bps-governor.war" dest="${TEMP_DIR}/governor.war" scale="2"/>
+				</then>
+			</if>			
+			
+			<!-- 部署Coframe部分 -->
+			<if>
+				<equals arg1="${IS_DEPLOY_COFRAME}" arg2="true"/>
+				<then>
+					<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/governor/coframe-governor.war to ${TEMP_DIR}/governor.war"/>
+					<unzip src="${INSTALL_ROOT}/resources/base_comps/product/governor/coframe-governor.war" dest="${TEMP_DIR}/governor.war" scale="2"/>
+				</then>
+			</if>
+			
+			<!-- 部署CAP部分 -->
+			<if>
+		    	<equals arg1="${IS_DEPLOY_CAP}" arg2="true"/>
+		    	<then>
+		    		<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/governor/cap-governor.war to ${TEMP_DIR}/governor.war"/>
+					<unzip src="${INSTALL_ROOT}/resources/base_comps/product/governor/cap-governor.war" dest="${TEMP_DIR}/governor.war"/>
+		    	</then>
+			</if>
+			
+			<!-- 对JDK1.8 ecj.jar处理 -->
+			  <if>
+		          <equals arg1="${JAVA_VERSION}" arg2="1.8" function="startsWith"/>
+		        <then>
+			       <delete file="${TEMP_DIR}/governor.ear/governor.war/WEB-INF/lib/jdt-3.1.jar"/>
+				   <copyfile src="${INSTALL_ROOT}/resources/base_comps/product/server/ecj_jdk8/ecj-4.2.1.jar" dest="${TEMP_DIR}/governor.war/WEB-INF/lib/ecj-4.2.1.jar" overwrite="true"/>
+		        </then>
+             </if>
+			 
+			<!-- 更新license -->
+			<echo message="......put license file to governor.war"/>
+			<copyfile src="${INSTALL_ROOT}/installer/license/primetonlicense.xml" dest="${TEMP_DIR}/governor.war/WEB-INF/_srv/primetonlicense.xml" overwrite="true"/>
+			
+		    <!-- 更新version -->
+			<echo message="......put version to governor.war"/>
+			<copyfile src="${INSTALL_ROOT}/resources/base_comps/version.properties" dest="${TEMP_DIR}/governor.war/WEB-INF/_srv/version/version.properties" overwrite="true"/>
+			
+			<!-- 如果是bps4java版本 -->
+			<if>
+		    	<equals arg1="${IS_BPS_JAVA_EDITION}" arg2="true"/>
+		    	<then>
+					<!-- 更新Governor菜单 -->
+					<echo message="......update polit-tree for governor.war(java)"/>
+					<copyfile src="${TEMP_DIR}/governor.war/WEB-INF/_srv/work/system/com.primeton.workflow.manager.governor/META-INF/polit-tree-java.xml" 
+						dest="${TEMP_DIR}/governor.war/WEB-INF/_srv/work/system/com.primeton.workflow.manager.governor/META-INF/polit-tree.xml" overwrite="true"/>
+				</then>
+			</if>    	    
+			
+			<!-- 更新governor管理员密码 -->
+			<echo message=" update sysadmin password configured in governor.war/WEB-INF/governor.xml" />
+			<action name="update sysadmin password" classname="com.primeton.install.ext.action.UpdateGovernorPwdAction">
+				<parameter name="GOVERNOR_XML_PATH" value="${TEMP_DIR}/governor.war/WEB-INF/governor.xml"/>
+				<parameter name="PASSWORD" value="${SYSADMIN_PWD}"/>
+			</action>
+			
+			<if>
+		    	<equals arg1="${IS_DEPLOY_DEFAULTAPP}" arg2="true"/>
+		    	<then>
+		    		<echo message="...... add app to governor, config governor/WEB-INF/_srv/domain/domain.xml"/>
+		    	    <action name="add app to governor" classname="com.primeton.installer.platform.action.UpdateDomainConfig">
+		    	    	<parameter name="IP" value="${USER_IP}"/>
+		    	    	<parameter name="PORT" value="${USER_PORT}"/>
+		    	    	<parameter name="APP_NAME" value="${DEFAULT_APP_NAME}"/>
+		    	    	<parameter name="DOMAIN_CONF_PATH" value="${TEMP_DIR}/governor.war/WEB-INF/_srv/domain/domain.xml"/>
+		    	    </action>
+		    	</then>
+    		</if>
+
+			<if>
+		    	<equals arg1="${APP_SERVER_NAME}" arg2="Tomcat"/>
+		    	<then>
+		    		<echo message="...... deploy governor to ${APP_SERVER_NAME}"/>
+		    		<action name="deploy war:governor" classname="com.primeton.install.ext.action.DeployTomcatWar" scale="20">
+						<parameter name="WAR_PATH" value="${TEMP_DIR}/governor.war"/>
+						<parameter name="TOMCAT_HOME" value="${AS_TOMCAT_HOME}"/>
+					</action>					
+				</then>
+			</if>
+
+			<if>
+		    	<equals arg1="${APP_SERVER_NAME}" arg2="JBoss"/>
+		    	<then>
+		    		<echo message="...... deploy governor to ${APP_SERVER_NAME}"/>		
+					<action name="deploy war:governor" classname="com.primeton.install.ext.action.DeployJBossEar" scale="20">
+						<parameter name="EAR_PATH" value="${TEMP_DIR}/governor.war"/>
+						<parameter name="JBOSS_HOME" value="${AS_JBOSS_HOME}"/>
+						<parameter name="SERVER_NAME" value="default"/>
+					</action>
+
+					<action name="JBoss610Action" classname="com.primeton.install.ext.action.RunDeployAction">
+						<parameter name="DEPLOY_XML_FILE" value="${INSTALL_ROOT}/resources/as_comps/jboss/${APP_SERVER_VERSION}/deploy.xml"/>
+						<parameter name="__WAR_DIR" value="${AS_JBOSS_HOME}/server/default/deploy/governor.war"/>
+					</action>
+
+		    		<delete file="${AS_JBOSS_HOME}/server/default/deploy/governor.war/WEB-INF/lib/log4j-1.2.8.jar"/>
+		    		<delete file="${AS_JBOSS_HOME}/server/default/deploy/governor.war/WEB-INF/lib/xercesImpl-2.8.1.jar"/>
+		    		<delete file="${AS_JBOSS_HOME}/server/default/deploy/governor.war/WEB-INF/lib/xml-apis-1.2.01.jar"/>
+				</then>
+			</if>
+
+			<if>
+		    	<equals arg1="${APP_SERVER_NAME}" arg2="WebLogic"/>
+		    	<then>
+		    	
+		    		<delete file="${TEMP_DIR}/governor.war/WEB-INF/lib/xml-apis-1.2.01.jar"/>
+					
+		    		
+					<move file="${TEMP_DIR}/governor.war"
+							tofile="${AS_WL_DOMAIN_HOME}/applications/governor.war"/>
+					<if>
+						<equals arg1="${APP_SERVER_VERSION}" arg2="12.2.1.0"/>
+		    			<then>
+							<action name="Weblogic12210Action" classname="com.primeton.install.ext.action.RunDeployAction">
+								<parameter name="DEPLOY_XML_FILE" value="${INSTALL_ROOT}/resources/as_comps/weblogic/12.2.1.0/deploy.xml"/>
+								<parameter name="__WAR_DIR" value="${AS_WL_DOMAIN_HOME}/applications/governor.war"/>
+							</action>
+						</then>
+					</if>		
+		    		<echo message="...... deploy governor to ${APP_SERVER_NAME}"/>
+					<action name="deploy war:governor" classname="com.primeton.install.ext.action.DeployWebLogicEar" scale="25">
+						<parameter name="BEA_HOME" value="${AS_WL_BEA_HOME}"/>
+						<parameter name="WEBLOGIC_HOME" value="${AS_WL_HOME}"/>
+						<parameter name="DOMAIN_HOME" value="${AS_WL_DOMAIN_HOME}"/>
+						<parameter name="LOGIN_NAME" value="${AS_WL_USERNAME}"/>
+						<parameter name="PASSWORD" value="${AS_WL_PASSWORD}"/>
+						<parameter name="IP" value="${USER_IP}"/>
+						<parameter name="PORT" value="${AS_WL_WEBSVR_PORT}"/>
+						<parameter name="EAR_PATH" value="${AS_WL_DOMAIN_HOME}/applications/governor.war"/>
+						<parameter name="TARGET_SERVER" value="${AS_WL_TARGET_SERVER}"/>
+					</action>
+					
+				</then>
+			</if>
+
+			<if>
+		    	<equals arg1="${APP_SERVER_NAME}" arg2="WebSphere"/>
+		    	<then>
+		    	    <if>
+		    	    	<equals arg1="${IS_CLUSTER}" arg2="true" />
+		    	    	<then/>
+		    	    	<else>
+		    	    		<echo message="...... compress governor.war from temp"/>
+		    	    		
+		    	    		<delete file="${TEMP_DIR}/governor.war/WEB-INF/lib/xercesImpl-2.8.1.jar"/>
+		    				<delete file="${TEMP_DIR}/governor.war/WEB-INF/lib/xml-apis-1.2.01.jar"/>	
+		    	    		
+							<zip basedir ="${TEMP_DIR}/governor.war" destfile="${TEMP_DIR}/governor.zip" scale="13"/>
+							<delete dir="${TEMP_DIR}/governor.war"/>
+							<move file="${TEMP_DIR}/governor.zip" tofile="${TEMP_DIR}/governor.war"/>
+							
+							<echo message="...... deploy governor to ${APP_SERVER_NAME}"/>
+							<action name="deploy war:governor" classname="com.primeton.install.ext.action.DeployWASEar" scale="25">
+								<parameter name="EXTERNAL_CONFIG_DIR" value="${INSTALL_DIR}/apps_config"/>
+								<parameter name="APP_NAME" value="governor"/>
+								<parameter name="EAR_PATH" value="${TEMP_DIR}/governor.war"/>
+								<parameter name="IS_DEPLOY_EJB" value="false"/>
+								<parameter name="IS_CREATE_JMS" value="false"/>
+							</action>
+		    	    	</else>
+		    	    </if>
+				</then>
+			</if>
+			
+			<!-- 对PAS应用服务器的处理 -->
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="PAS"/>
+				<then>					
+					<!-- 部署应用到PAS -->
+					<echo message="...... deploy governor to ${APP_SERVER_NAME}"/>
+					
+					<delete file="${TEMP_DIR}/governor.war/WEB-INF/lib/xml-apis-1.2.01.jar"/>
+					
+					<action name="deploy war:governor" classname="com.primeton.installer.platform.pas.PASDeployWar">
+						<parameter name="AS_PAS_HOME" value="${AS_PAS_HOME}"/>
+						<parameter name="DEPLOY_WAR_PATH" value="${TEMP_DIR}/governor.war"/>
+					</action>
+				</then>
+			</if>
+			
+			<!--  TongWeb处理 -->
+			<if>
+		    	<equals arg1="${APP_SERVER_NAME}" arg2="TongWeb"/>
+		    	<then>
+		    		<echo message="...... deploy governor to ${APP_SERVER_NAME}"/>
+		    		<action name="deploy war:governor" classname="com.primeton.install.ext.action.DeployTongWebEar" scale="20">
+						<parameter name="EAR_PATH" value="${TEMP_DIR}/governor.war"/>
+						<parameter name="TONGWEB_HOME" value="${AS_TONGWEB_HOME}"/>
+						<parameter name="SERVER_NAME" value="default"/>
+					</action>					
+				</then>
+			</if>
+			
+			<delete file="${TEMP_DIR}/governor.war"/>
+		</then>
+	</if>
+</deploy>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>
+	<!--
+	 | 1. 删除jar,增加jar
+	 |
+	 -->
+
+	<echo message="^_^_^_^_^_^_^_^_^_^_^_^: ${__WAR_DIR}"/>	
+	
+	<delete file="${__WAR_DIR}/WEB-INF/lib/xalan-2.5.0.jar"/>
+
+</deploy>

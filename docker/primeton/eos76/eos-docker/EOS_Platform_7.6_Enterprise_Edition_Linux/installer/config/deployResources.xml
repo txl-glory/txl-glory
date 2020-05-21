@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>
+	<!-- Tomcat 服务器配置 -->
+	<if>
+		<equals arg1="${APP_SERVER_TYPE}" arg2="Tomcat"/>
+		<then>		
+		</then>
+	</if>
+
+	<!-- JBoss 服务器配置 -->
+	<if>
+		<equals arg1="${APP_SERVER_TYPE}" arg2="JBoss"/>
+		<then>
+			<if>
+				<equals arg1="${IS_DEPLOY_DATASOURCE}" arg2="true"/>
+				<then>
+					<echo message="Start configuring the JBoss datasource ..."/>
+					<action name="create datasource" classname="com.primeton.installer.platform.action.ConfigJBossDataSource"/>								
+				</then>
+			</if>
+			<if>
+				<equals arg1="${IS_DEPLOY_JMSQUEUE}" arg2="true"/>
+				<then>
+					<echo message ="......config jms"/>	
+					<action name="config jms" classname="com.primeton.install.ext.action.CreateJBossJmsQueue">
+						<parameter name="JBOSS_HOME" value="${AS_JBOSS_HOME}"/>
+						<parameter name="SERVER_NAME" value="default"/>
+						<parameter name="QUEUE_NAME" value="${APP_NAME}/EOS_INVOKE_QUEUE,${APP_NAME}/EOS_RESULT_QUEUE"/>
+						<parameter name="QUEUE_JNDI" value="${APP_NAME}/EOS_INVOKE_QUEUE,${APP_NAME}/EOS_RESULT_QUEUE"/>
+					</action>	
+				</then>
+			</if>	
+		
+		</then>
+	</if>
+
+	<!-- WebLogic 服务器配置 -->
+	<if>
+		<equals arg1="${APP_SERVER_TYPE}" arg2="WebLogic"/>
+		<then>
+
+    		<!-- 启动weblogic -->
+    		<echo message="start webloigc "/>
+			<action name="start webloigc" classname="com.primeton.install.ext.action.StartupWeblogicServer" desc="">
+				<parameter name="JVM_ARGS" value="-Djavax.xml.stream.XMLInputFactory=weblogic.xml.stax.XMLStreamInputFactory -Djavax.xml.stream.XMLOutputFactory=weblogic.xml.stax.XMLStreamOutputFactory -Djavax.xml.stream.XMLEventFactory=weblogic.xml.stax.EventFactory -Xms256m -Xmx256m -XX:MaxNewSize=256m -XX:MaxPermSize=256m "/>
+			</action>
+
+			<!-- 创建数据源 -->
+			<if>
+				<equals arg1="${IS_DEPLOY_DATASOURCE}" arg2="true"/>
+				<then>
+					<echo message="Start configuring the WebLogic datasource ..."/>
+					<action name="create datasource" classname="com.primeton.install.ext.action.CreateWeblogicDataSource">
+					</action>		
+				</then>
+			</if>
+			
+			<!-- 配置JMS -->
+			<if>
+				<equals arg1="${IS_DEPLOY_JMSQUEUE}" arg2="true"/>
+				<then>
+					<echo message="Start configuring the WebLogic JMS ..."/>
+					<setvalue key="_QUEUE_JNDIS" value="${APP_NAME}/EOS_INVOKE_QUEUE,${APP_NAME}/EOS_RESULT_QUEUE"/>
+					<setvalue key="_QUEUE_NAMES" value="${APP_NAME}.EOS_INVOKE_QUEUE,${APP_NAME}.EOS_RESULT_QUEUE"/>
+					<if>
+						<equals arg1="${IS_CLUSTER}" arg2="true"/>
+						<then>
+							<action name="config jms" classname="com.primeton.install.ext.action.CreateWeblogicJMS">
+								<parameter name="JDBC_STORE_NAME" value="EOSJMSJDBCStore"/>
+								<parameter name="DATA_SOURCE_NAME" value="${DB_DS_JNDI_NAME}"/>
+								<parameter name="TABLE_PREFIX" value="EOS_"/>
+								<parameter name="TARGET_SERVER" value="${AS_WL_TARGET_SERVER}"/>
+								<parameter name="QUEUE_JNDIS" value="${_QUEUE_JNDIS}"/>
+								<parameter name="QUEUE_NAMES" value="${_QUEUE_NAMES}"/>
+								<parameter name="CONNECTION_FACTORY_JNDI" value="EOS_QUEUE_FACTORY"/>
+								<parameter name="CONNECTION_FACTORY_NAME" value="EOS_QUEUE_FACTORY"/>
+								<parameter name="SUB_DEPLOYMENT_NAME" value="BEA_JMS_MODULE_SUBDEPLOYMENT_EOSJMSServer"/>
+								<parameter name="JMS_SERVER_NAME" value="EOSJMSServer"/>
+								<parameter name="JMS_MODULE_NAME" value="EOSSystemModule"/>
+							</action>
+						</then>
+						<else>
+							<action name="config jms" classname="com.primeton.install.ext.action.CreateWeblogicJMS">
+								<parameter name="FILE_STORE_NAME" value="EOSJMSStoreFile"/>
+								<parameter name="STORE_DIRECTORY" value="${AS_WL_DOMAIN_HOME}/servers/${AS_WL_TARGET_SERVER}/data/store/EOSJMSStoreFile"/>
+								<parameter name="TARGET_SERVER" value="${AS_WL_TARGET_SERVER}"/>
+								<parameter name="QUEUE_JNDIS" value="${_QUEUE_JNDIS}"/>
+								<parameter name="QUEUE_NAMES" value="${_QUEUE_NAMES}"/>
+								<parameter name="CONNECTION_FACTORY_JNDI" value="EOS_QUEUE_FACTORY"/>
+								<parameter name="CONNECTION_FACTORY_NAME" value="EOS_QUEUE_FACTORY"/>
+								<parameter name="SUB_DEPLOYMENT_NAME" value="BEA_JMS_MODULE_SUBDEPLOYMENT_EOSJMSServer"/>
+								<parameter name="JMS_SERVER_NAME" value="EOSJMSServer"/>
+								<parameter name="JMS_MODULE_NAME" value="EOSSystemModule"/>
+							</action>
+						</else>
+					</if>
+				</then>
+			</if>
+			<action name="stop webloigc" classname="com.primeton.install.ext.action.StopWeblogicServer" desc=""/>							
+		</then>
+	</if>
+
+	<!-- webSphere服务器配置 -->
+	<if>
+		<equals arg1="${APP_SERVER_TYPE}" arg2="WebSphere"/>
+		<then>
+		    <if>
+				<equals arg1="${IS_CLUSTER}" arg2="true"/>
+		    	<then>
+    				<setvalue key="WAS_ENV" value="CLUSTER"/>
+    				
+    				<!--配置集群JMS -->
+					<if>
+						<equals arg1="${IS_DEPLOY_JMSQUEUE}" arg2="true"/>
+						<then>
+							 <action name="config WAS JMS" classname="com.primeton.install.ext.action.ConfigWASClusterJms">
+							</action>
+						</then>
+					</if>
+					<!--配置集群数据源 -->
+					<if>
+						<equals arg1="${IS_DEPLOY_DATASOURCE}" arg2="true"/>
+						<then>					
+							<action name="config WAS DS" classname="com.primeton.install.ext.action.ConfigWASClusterDataSource">
+							</action>			
+						</then>
+					</if>
+					
+					<if>
+						<equals arg1="${IS_SET_WAS_JVM}" arg2="true"/>
+						<then>
+							<!-- 设置JVM参数 -->
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASClusterJvmParam">
+								<parameter name="PARAM_NAME" value="JCEProvider"/>
+								<parameter name="PARAM_VALUE" value="IBMJCE"/>
+							</action>
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASClusterJvmParam">
+								<parameter name="PARAM_NAME" value="Xgcpolicy"/>
+								<parameter name="PARAM_VALUE" value="gencon"/>
+							</action>
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASClusterJvmParam">
+								<parameter name="PARAM_NAME" value="java.net.preferIPv4Stack"/>
+								<parameter name="PARAM_VALUE" value="true"/>
+							</action>
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASClusterJvmParam">
+								<parameter name="PARAM_NAME" value="com.ibm.websphere.orb.uniqueServerName"/>
+								<parameter name="PARAM_VALUE" value="true"/>
+							</action>
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASClusterJvmParam">
+								<parameter name="PARAM_NAME" value="java.awt.headless"/>
+								<parameter name="PARAM_VALUE" value="true"/>
+							</action>
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASClusterJvmParam">
+								<parameter name="PARAM_NAME" value="javax.xml.soap.SAAJMetaFactory"/>
+								<parameter name="PARAM_VALUE" value="com.sun.xml.messaging.saaj.soap.SAAJMetaFactoryImpl"/>
+							</action>
+						</then>
+					</if>
+					<!-- 设置集群Queue -->
+					<if>
+						<equals arg1="${IS_DEPLOY_JMSQUEUE}" arg2="true"/>
+						<then>					
+							<action name="config was cluster queue" classname="com.primeton.install.ext.action.ConfigWASClusterQueue"/>
+						</then>
+					</if>
+				</then>
+				<else>
+					<setvalue key="WAS_ENV" value="STAND_ALONE"/><!-- 启动WAS -->
+					<action name="start WAS" classname="com.primeton.install.ext.action.StartWebSphere"/>
+					<!-- 配置单机JMS -->
+					<if>
+						<equals arg1="${IS_DEPLOY_JMSQUEUE}" arg2="true"/>
+						<then>
+							<action name="config WAS JMS" classname="com.primeton.install.ext.action.ConfigWASJms">
+							</action>
+							<action name="config WAS Queue" classname="com.primeton.install.ext.action.ConfigWASStandaloneQueue">
+							</action>							
+						</then>
+					</if>
+					<!-- 配置单机数据源 -->
+					<if>
+						<equals arg1="${IS_DEPLOY_DATASOURCE}" arg2="true"/>
+						<then>
+							<action name="config WAS DS" classname="com.primeton.install.ext.action.ConfigWASDataSource">
+							</action>
+							<if>
+								<equals arg1="${DB_IS_DEFAULT_JAR}" arg2="false"/>
+								<then>
+									<action name="ACTION.COPYFILE" classname="com.primeton.install.ext.action.CopyJDBCDrivers" desc="copy user Defined JDBC Jar">
+										<parameter name="JDBC_DIR" value=""/>
+										<parameter name="TARGET_DIRS" value="${AS_WAS_PROFILE_HOME}/../../lib/ext"/>
+									</action>
+								</then>
+							</if>						
+						</then>
+					</if>
+					<!-- 设置 JVM 参数及 WebContainer 参数-->
+					<if>
+						<equals arg1="${IS_SET_WAS_JVM}" arg2="true"/>
+						<then>
+							<!-- 设置JVM参数 -->
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+								<parameter name="PARAM_NAME" value="JCEProvider"/>
+								<parameter name="PARAM_VALUE" value="IBMJCE"/>
+							</action>					
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+								<parameter name="PARAM_NAME" value="Xgcpolicy"/>
+								<parameter name="PARAM_VALUE" value="gencon"/>
+							</action>
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+								<parameter name="PARAM_NAME" value="com.ibm.websphere.orb.uniqueServerName"/>
+								<parameter name="PARAM_VALUE" value="true"/>
+							</action>
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+								<parameter name="PARAM_NAME" value="java.awt.headless"/>
+								<parameter name="PARAM_VALUE" value="true"/>
+							</action>
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+								<parameter name="PARAM_NAME" value="java.net.preferIPv4Stack"/>
+								<parameter name="PARAM_VALUE" value="true"/>
+							</action>
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+								<parameter name="PARAM_NAME" value="javax.xml.soap.SAAJMetaFactory"/>
+								<parameter name="PARAM_VALUE" value="com.sun.xml.messaging.saaj.soap.SAAJMetaFactoryImpl"/>
+							</action>
+							<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+								<parameter name="PARAM_NAME" value="EXTERNAL_CONFIG_DIR"/>
+								<parameter name="PARAM_VALUE" value="${INSTALL_DIR}/apps_config"/>
+							</action>							
+							<!-- 设置 WebContainer 参数 -->
+							<action name="set WebContainer" classname="com.primeton.install.ext.action.SetWASWebContainerParam">
+								<parameter name="PARAM_NAME" value="com.ibm.ws.webcontainer.invokefilterscompatibility"/>
+								<parameter name="PARAM_VALUE" value="true"/>
+							</action>
+						</then>
+					</if>
+					
+					<action name="stop WAS" classname="com.primeton.install.ext.action.StopWebsphere" strategy="ignore"/>
+				</else>
+			</if>
+		</then>
+	</if>
+		<!-- TongWeb 服务器配置 -->
+	<if>
+		<equals arg1="${APP_SERVER_TYPE}" arg2="TongWeb"/>
+		<then>
+			<if>
+				<equals arg1="${IS_DEPLOY_DATASOURCE}" arg2="true"/>
+				<then>
+					<echo message="Start configuring the TongWeb datasource ..."/>
+				</then>
+			</if>		
+		</then>
+	</if>
+</deploy>

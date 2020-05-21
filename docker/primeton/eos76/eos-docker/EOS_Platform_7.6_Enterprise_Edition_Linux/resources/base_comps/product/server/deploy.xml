@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>	
+	<if>
+    	<equals arg1="${IS_DEPLOY_DEFAULTAPP}" arg2="true"/>
+    	<then>		
+			<!-- default应用部署 -->
+			<!-- 外置目录，应用基本信息，IP，管理端口 -->
+			<action name="create appconfig dir" classname="com.primeton.installer.platform.action.CreateAppcfgDir" desc="Create App Config dir">
+				<parameter name="EXTERNAL_CONFIG_DIR" value="${INSTALL_DIR}/apps_config"/>
+				<parameter name="APP_NAME" value="${DEFAULT_APP_NAME}"/>
+				<parameter name="IP" value="${USER_IP}"/>
+				<parameter name="PORT" value="${USER_PORT}"/>
+			</action>
+			
+			<delete dir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"/>
+			
+			<!-- 部署EOS部分 -->
+			<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/server/eos-default.war to ${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war"/>
+			<unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/eos-default.war" dest="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war" scale="15"/>
+			
+			<!-- 应用服务器相关部分 -->
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="Tomcat"/>
+				<then>
+					<echo message="......unzip war to ${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war"/>
+					<unzip src="${INSTALL_ROOT}/resources/as_comps/tomcat/eos-default.war" dest="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war" scale="1"/>
+				</then>
+				<else>
+					<echo message="......unzip ear to ${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"/>
+					<unzip src="${INSTALL_ROOT}/resources/as_comps/${APP_SERVER_NAME_LOWERCASE}/eos-default.ear" dest="${TEMP_DIR}/_${DEFAULT_APP_NAME}.ear" scale="1"/>
+					<unzip src="${TEMP_DIR}/_${DEFAULT_APP_NAME}.ear/default.war" dest="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war" scale="1"/>
+				    <delete file="${TEMP_DIR}/_${DEFAULT_APP_NAME}.ear/default.war"/>
+				    <move file="${TEMP_DIR}/_${DEFAULT_APP_NAME}.ear" tofile="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"/>
+				      
+				    <echo message ="......replace ${DEFAULT_APP_NAME}.ear/META-INF appName"/>
+					<!-- 修改META-INF目录下文件中的应用名称 -->
+					<action name="replace META-INF appName" classname="com.primeton.install.ext.action.ReplaceToken">
+						<parameter name="TARGET_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/META-INF"/>
+						<parameter name="REPLACE_TOKEN" value="@eosapp_name@"/>
+						<parameter name="NEW_VALUE" value="${DEFAULT_APP_NAME}"/>
+					</action>
+					
+				    <if>
+				    	<equals arg1="${IS_DEPLOY_EJB}" arg2="false"/>
+				    	<then>				    		
+							<move file="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb.jar" tofile="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war/WEB-INF/lib/eos-server-access-ejb-${eos.version}.jar"/>
+							<action name="remove ejb module" classname="com.primeton.install.ext.action.RemoveXMLNodeValue">
+				    	    	<parameter name="FILE_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/META-INF/application.xml"/>
+				    	    	<parameter name="XPATH" value="//module[@id='DefaultEjbModule']"/>
+				    	    </action>								
+						</then>
+				    </if>
+				</else>
+			</if>
+			
+			<echo message="......deploy option default war"/>
+			<action name="deploy option default war" classname="com.primeton.install.ext.action.RunDeployAction">
+				<parameter name="DEPLOY_XML_FILE" value="${INSTALL_ROOT}/resources/base_comps/product/server/deploy-option-default.xml"/>
+				<parameter name="__WAR_DIR" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war"/>
+			</action>
+		
+			<!-- 修改user-config.xml中的数据源JNDI名称 -->
+		    <action name="set JNDI NAME" classname="com.primeton.install.ext.action.SetXMLNodeValue">
+		    	<parameter name="FILE_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war/WEB-INF/_srv/config/user-config.xml"/>
+		    	<parameter name="XPATH" value="//module[@name='DataSource']/group[@name='default']/configValue[@key='Jndi-Name']"/>
+		    	<parameter name="NODE_VALUE" value="${DB_DS_JNDI_NAME}"/>
+		    </action>
+		  	     
+			<!-- 修改domain.xml -->
+			<if>
+				<equals arg1="${IS_DEPLOY_GOVERNOR}" arg2="true"/>
+				<then>
+					<echo message="......modify domain.xml"/>
+		    	    <action name="modify domain.xml" classname="com.primeton.installer.platform.action.UpdateDomainConfig">
+		    	    	<parameter name="IP" value="${USER_IP}"/>
+		    	    	<parameter name="PORT" value="${USER_PORT}"/>
+		    	    	<parameter name="APP_NAME" value="${DEFAULT_APP_NAME}"/>
+		    	    	<parameter name="DOMAIN_CONF_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war/WEB-INF/_srv/domain/domain.xml"/>
+		    	    </action>
+		    	</then>
+		    </if>
+			<!-- 对JDK1.8 ecj.jar处理 -->
+			  <if>
+		          <equals arg1="${JAVA_VERSION}" arg2="1.8" function="startsWith"/>
+		        <then>
+			       <delete file="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war/WEB-INF/lib/jdt-3.1.jar"/>
+				   <copyfile src="${INSTALL_ROOT}/resources/base_comps/product/server/ecj_jdk8/ecj-4.2.1.jar" dest="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war/WEB-INF/lib/ecj-4.2.1.jar" overwrite="true"/>
+		        </then>
+             </if>
+			<!-- 对Tomcat应用服务器的处理 -->
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="Tomcat"/>
+				<then>
+					<!-- 创建C3P0数据源 -->
+		    		<echo message="......create datasource in ...${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war/WEB-INF/_srv/config/user-config.xml"/>
+					<action name="create datasource" classname="com.primeton.install.ext.action.CreateDataSource">
+						<parameter name="USER_CONFIG_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war/WEB-INF/_srv/config/user-config.xml"/>
+					</action>
+					
+					<!-- 部署应用到Tomcat -->
+					<echo message="......deploy ${DEFAULT_APP_NAME}.war to tomcat"/>
+					<action name="deploy war:${DEFAULT_APP_NAME}" classname="com.primeton.install.ext.action.DeployTomcatWar" scale="100">
+						<parameter name="WAR_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war"/>
+						<parameter name="TOMCAT_HOME" value="${AS_TOMCAT_HOME}"/>
+					</action>
+				</then>
+			</if>
+			
+			<!-- 对JBoss应用服务器的处理 -->
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="JBoss"/>
+				<then>
+					<echo message="create datasource"/>
+					<action name="create datasource" classname="com.primeton.installer.platform.action.ConfigJBossDataSource">
+					</action>
+					
+					<if>
+				    	<equals arg1="${IS_DEPLOY_EJB}" arg2="true"/>
+				    	<then>
+							<unzip src="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb.jar" dest="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb"/>
+							
+							<echo message ="......update ${DEFAULT_APP_NAME}.ear/eos-server-access-ejb/META-INF/jboss.xml"/>
+							<action name="update jboss.xml" classname="com.primeton.install.ext.action.UpdateJbossEJBConfig">
+								<parameter name="JBOSS_EJB_JAR_XML_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb/META-INF/jboss.xml"/>
+							</action>
+							<delete dir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb.jar"/>
+							<zip basedir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb" destfile="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb.jar"/>
+							<delete dir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb"/>
+							
+							<echo message ="......config jms"/>								
+							<action name="config jms" classname="com.primeton.install.ext.action.CreateJBossJmsQueue">
+								<parameter name="JBOSS_HOME" value="${AS_JBOSS_HOME}"/>
+								<parameter name="SERVER_NAME" value="default"/>
+								<parameter name="QUEUE_NAME" value="${DEFAULT_APP_NAME}/EOS_INVOKE_QUEUE,${DEFAULT_APP_NAME}/EOS_RESULT_QUEUE"/>
+								<parameter name="QUEUE_JNDI" value="${DEFAULT_APP_NAME}/EOS_INVOKE_QUEUE,${DEFAULT_APP_NAME}/EOS_RESULT_QUEUE"/>
+							</action>
+						</then>
+				    </if>
+				    
+					<echo message ="......deploy ${DEFAULT_APP_NAME}.ear to ${AS_JBOSS_HOME}"/>
+					<action name="deploy ear:${DEFAULT_APP_NAME}" classname="com.primeton.install.ext.action.DeployJBossEar" scale="130">
+						<parameter name="EAR_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"/>
+						<parameter name="JBOSS_HOME" value="${AS_JBOSS_HOME}"/>
+						<parameter name="SERVER_NAME" value="default"/>
+					</action>
+					
+				    <action name="JBoss610Action" classname="com.primeton.install.ext.action.RunDeployAction">
+						<parameter name="DEPLOY_XML_FILE" value="${INSTALL_ROOT}/resources/as_comps/jboss/${APP_SERVER_VERSION}/deploy.xml"/>
+						<parameter name="__WAR_DIR" value="${AS_JBOSS_HOME}/server/default/deploy/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war"/>
+					</action>
+					
+					
+				</then>
+			</if>
+		
+			<!-- 对weblogic应用服务器的处理 -->
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="WebLogic"/>
+				<then>		
+					<echo message="create datasource"/>
+					<action name="create datasource" classname="com.primeton.install.ext.action.CreateWeblogicDataSource">
+					</action>
+		            
+					<if>
+				    	<equals arg1="${IS_DEPLOY_EJB}" arg2="true"/>
+				    	<then>
+				    		<!-- 更新ejb里面的应用名称 -->
+							<echo message="update weblogic-ejb-jar.xml"/>
+							<unzip src="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb.jar" dest="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb"/>
+							<action name="modify weblogic-ejb-jar.xml" classname="com.primeton.install.ext.action.UpdateWebLogicEJBConfig">
+								<parameter name="WEBLOGIC_EJB_JAR_CONF_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb/META-INF/weblogic-ejb-jar.xml"/>
+							</action>
+							<delete dir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb.jar"/>
+							<zip basedir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb" destfile="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb.jar"/>
+							<delete dir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb"/>
+							
+				    		<!---********************************-->
+							<!-- 配置JMS -->
+							<!---********************************-->
+							<echo message="config jms"/>
+							<setvalue key="_QUEUE_JNDIS" value="${DEFAULT_APP_NAME}/EOS_INVOKE_QUEUE,${DEFAULT_APP_NAME}/EOS_RESULT_QUEUE"/>
+							<setvalue key="_QUEUE_NAMES" value="${DEFAULT_APP_NAME}.EOS_INVOKE_QUEUE,${DEFAULT_APP_NAME}.EOS_RESULT_QUEUE"/>
+							<if>
+								<equals arg1="${IS_CLUSTER}" arg2="true"/>
+								<then>
+									<action name="config jms" classname="com.primeton.install.ext.action.CreateWeblogicJMS">
+										<parameter name="JDBC_STORE_NAME" value="EOSJMSJDBCStore"/>
+										<parameter name="DATA_SOURCE_NAME" value="${DB_DS_JNDI_NAME}"/>
+										<!-- 这个是在创建JDBCStore时，需要使用的表前缀 -->
+										<parameter name="TABLE_PREFIX" value="EOS_"/>
+										<parameter name="TARGET_SERVER" value="${AS_WL_TARGET_SERVER}"/>
+										<parameter name="QUEUE_JNDIS" value="${_QUEUE_JNDIS}"/>
+										<parameter name="QUEUE_NAMES" value="${_QUEUE_NAMES}"/>
+										<parameter name="CONNECTION_FACTORY_JNDI" value="EOS_QUEUE_FACTORY"/>
+										<parameter name="CONNECTION_FACTORY_NAME" value="EOS_QUEUE_FACTORY"/>
+										<parameter name="SUB_DEPLOYMENT_NAME" value="BEA_JMS_MODULE_SUBDEPLOYMENT_EOSJMSServer"/>
+										<parameter name="JMS_SERVER_NAME" value="EOSJMSServer"/>
+										<parameter name="JMS_MODULE_NAME" value="EOSSystemModule"/>
+									</action>
+								</then>
+								<else>
+									<action name="config jms" classname="com.primeton.install.ext.action.CreateWeblogicJMS">
+										<parameter name="FILE_STORE_NAME" value="EOSJMSStoreFile"/>
+										<parameter name="STORE_DIRECTORY" value="${AS_WL_DOMAIN_HOME}/servers/${AS_WL_TARGET_SERVER}/data/store/EOSJMSStoreFile"/>
+										<parameter name="TARGET_SERVER" value="${AS_WL_TARGET_SERVER}"/>
+										<parameter name="QUEUE_JNDIS" value="${_QUEUE_JNDIS}"/>
+										<parameter name="QUEUE_NAMES" value="${_QUEUE_NAMES}"/>
+										<parameter name="CONNECTION_FACTORY_JNDI" value="EOS_QUEUE_FACTORY"/>
+										<parameter name="CONNECTION_FACTORY_NAME" value="EOS_QUEUE_FACTORY"/>
+										<parameter name="SUB_DEPLOYMENT_NAME" value="BEA_JMS_MODULE_SUBDEPLOYMENT_EOSJMSServer"/>
+										<parameter name="JMS_SERVER_NAME" value="EOSJMSServer"/>
+										<parameter name="JMS_MODULE_NAME" value="EOSSystemModule"/>
+									</action>
+								</else>
+							</if>
+				    	</then>
+				    </if>		    
+		
+					<echo message="move ear to weblogic domain"/>
+					<mkdir dir="${AS_WL_DOMAIN_HOME}/applications"/>
+					<move file="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"
+							tofile="${AS_WL_DOMAIN_HOME}/applications/${DEFAULT_APP_NAME}.ear"/>
+		            <if>
+						<equals arg1="${APP_SERVER_VERSION}" arg2="12.2.1.0"/>
+		    			<then>
+							<action name="JBoss610Action" classname="com.primeton.install.ext.action.RunDeployAction">
+								<parameter name="DEPLOY_XML_FILE" value="${INSTALL_ROOT}/resources/as_comps/weblogic/12.2.1.0/deploy.xml"/>
+								<parameter name="__WAR_DIR" value="${AS_WL_DOMAIN_HOME}/applications/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war"/>
+							</action>
+						</then>
+					</if>
+					<echo message="publish ear to weblogic"/>
+					<action name="deploy ear:${DEFAULT_APP_NAME}" classname="com.primeton.install.ext.action.DeployWebLogicEar" scale="135">
+						<parameter name="BEA_HOME" value="${AS_WL_BEA_HOME}"/>
+						<parameter name="WEBLOGIC_HOME" value="${AS_WL_HOME}"/>
+						<parameter name="DOMAIN_HOME" value="${AS_WL_DOMAIN_HOME}"/>
+						<parameter name="LOGIN_NAME" value="${AS_WL_USERNAME}"/>
+						<parameter name="PASSWORD" value="${AS_WL_PASSWORD}"/>
+						<parameter name="IP" value="${USER_IP}"/>
+						<parameter name="PORT" value="${AS_WL_WEBSVR_PORT}"/>
+						<parameter name="EAR_PATH" value="${AS_WL_DOMAIN_HOME}/applications/${DEFAULT_APP_NAME}.ear"/>
+						<parameter name="TARGET_SERVER" value="${AS_WL_TARGET_SERVER}"/>
+						<!-- 在集群情况下应用的处理方式,stage,nostage,external_stage -->
+						<parameter name="STAGE_MODEL" value="stage"/>
+					</action>	
+					
+				</then>
+			</if>
+		
+			<!-- 对webSphere应用服务器的处理 -->
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="WebSphere"/>
+				<then>					
+					<if>
+				    	<equals arg1="${IS_DEPLOY_EJB}" arg2="true"/>
+				    	<then>	
+				    		<unzip src="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb.jar" dest="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb"/>
+							<action name="modify ibm-ejb-jar-bnd.xmi" classname="com.primeton.install.ext.action.UpdateWebsphereEarEJBBndConf">
+								<parameter name="EAR_EJB_BND_CONF_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb/META-INF/ibm-ejb-jar-bnd.xmi"/>
+							</action>
+							<delete dir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb.jar"/>
+							<zip basedir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb" destfile="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb.jar"/>
+							<delete dir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/eos-server-access-ejb"/>	
+				    	</then>
+				    </if>	
+				    
+					<zip destfile="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.zip" basedir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war" scale="20"/>		
+					<delete dir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war"/>
+					<move file="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.zip" tofile="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war"/>
+					<zip destfile="${TEMP_DIR}/${DEFAULT_APP_NAME}.zip" basedir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"/>
+	                <delete dir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"/>
+					<move file="${TEMP_DIR}/${DEFAULT_APP_NAME}.zip" tofile="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"/>
+				    
+					<if>
+					    <equals arg1="${IS_CLUSTER}" arg2="true"/>
+				    	<then>					   
+				    								
+							<action name="config WAS DS" classname="com.primeton.install.ext.action.ConfigWASClusterDataSource"/>
+							
+							<if>
+						    	<equals arg1="${IS_DEPLOY_EJB}" arg2="true"/>
+						    	<then>	
+									<!-- 配置JMS -->
+									<action name="config WAS JMS" classname="com.primeton.install.ext.action.ConfigWASClusterJms">
+									<!-- 配置Queue -->
+									<action name="set queue" classname="com.primeton.install.ext.action.ConfigWASClusterQueue"/>
+									</action>
+						    	</then>
+						    </if>
+		
+							<!-- 部署默认应用 -->
+							<action name="deploy ear:${DEFAULT_APP_NAME}" classname="com.primeton.install.ext.action.DeployWASClusterEar" scale="135">
+								<parameter name="APP_NAME" value="${DEFAULT_APP_NAME}"/>
+								<parameter name="EAR_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"/>
+							</action>							
+						</then>
+    					<else>	
+    											
+							<action name="config WAS DS" classname="com.primeton.install.ext.action.ConfigWASDataSource"/>
+							
+							<if>
+						    	<equals arg1="${IS_DEPLOY_EJB}" arg2="true"/>
+						    	<then>	
+									<!-- 配置JMS -->
+									<action name="config WAS JMS" classname="com.primeton.install.ext.action.ConfigWASJms">
+									</action>
+						    	</then>
+						    </if>		
+																						
+							<!-- 部署默认应用 -->
+							<action name="deploy ear:${DEFAULT_APP_NAME}" classname="com.primeton.install.ext.action.DeployWASEar" scale="135">
+								<parameter name="EXTERNAL_CONFIG_DIR" value="${INSTALL_DIR}/apps_config"/>
+								<parameter name="APP_NAME" value="${DEFAULT_APP_NAME}"/>
+								<parameter name="EAR_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"/>
+								<parameter name="IS_DEPLOY_EJB" value="${IS_DEPLOY_EJB}"/>
+								<parameter name="IS_CREATE_JMS" value="${IS_DEPLOY_EJB}"/>
+							</action>	
+						</else>
+					</if>
+				</then>
+			</if>
+			
+			<!-- 对PAS应用服务器的处理 -->
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="PAS"/>
+				<then>
+					<!-- 创建C3P0数据源 -->
+		    		<echo message="......create datasource in ...${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war/WEB-INF/_srv/config/user-config.xml"/>
+					<action name="create datasource" classname="com.primeton.install.ext.action.CreateDataSource">
+						<parameter name="USER_CONFIG_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war/WEB-INF/_srv/config/user-config.xml"/>
+					</action>
+					
+					<action name="PASAction" classname="com.primeton.install.ext.action.RunDeployAction">
+								<parameter name="DEPLOY_XML_FILE" value="${INSTALL_ROOT}/resources/as_comps/pas/6.0/deploy.xml"/>
+								<parameter name="__WAR_DIR" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war"/>
+					</action>
+					
+					<!-- 部署应用到PAS -->
+					<echo message="......deploy ${DEFAULT_APP_NAME} to PAS"/>
+					<action name="deploy ear:${DEFAULT_APP_NAME}" classname="com.primeton.installer.platform.pas.PASDeployWar">
+						<parameter name="AS_PAS_HOME" value="${AS_PAS_HOME}"/>
+						<parameter name="DEPLOY_WAR_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"/>
+					</action>
+				</then>
+			</if>
+			
+			<!-- 对TONGWEB应用服务器的处理 -->
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="TongWeb"/>
+				<then>
+					<!-- 创建C3P0数据源 -->
+		    		<echo message="......create datasource in ...${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war/WEB-INF/_srv/config/user-config.xml"/>
+					<action name="create datasource" classname="com.primeton.install.ext.action.CreateDataSource">
+						<parameter name="USER_CONFIG_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear/${DEFAULT_APP_NAME}.war/WEB-INF/_srv/config/user-config.xml"/>
+					</action>
+								
+					<!-- 部署应用到TONGWEB -->
+					<echo message="......deploy ${DEFAULT_APP_NAME}.ear to TongWeb"/>
+					<action name="deploy ear:${DEFAULT_APP_NAME}" classname="com.primeton.install.ext.action.DeployTongWebEar" scale="100">
+						<parameter name="EAR_PATH" value="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"/>
+						<parameter name="TONGWEB_HOME" value="${AS_TONGWEB_HOME}"/>
+						<parameter name="SERVER_NAME" value="default"/>
+					</action>
+				</then>
+			</if>
+			
+			<!-- 清理临时目录 -->
+			<echo message="clean the temp directory..."/>
+			<delete dir="${TEMP_DIR}/${DEFAULT_APP_NAME}.ear"/>
+		  
+    	</then>
+	</if>
+</deploy>

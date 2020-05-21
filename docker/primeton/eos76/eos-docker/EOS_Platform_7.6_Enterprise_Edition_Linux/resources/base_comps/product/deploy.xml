@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>		
+	<batch batchFile="${INSTALL_ROOT}/resources/base_comps/product/deploy-init.xml"/>
+	
+	<!-- 数据库初始化 -->
+	<if>
+		<equals arg1="${DB_IS_INIT}" arg2="true"/>
+		<then>
+			<echo message="...... init db for eos"/>
+			<action name="init EOS Database" classname="com.primeton.installer.platform.action.InitDB" scale="15">
+				<parameter name="COMPONENT_NAMES" value="server"/>
+			</action>
+			<if>
+		    	<equals arg1="${IS_DEPLOY_BPS}" arg2="true"/>
+		    	<then>
+		    		<echo message="...... init db for bps"/>
+					<action name="Init BPS Database" classname="com.primeton.installer.platform.action.InitDB" scale="60">
+						<parameter name="COMPONENT_NAMES" value="bps"/>
+					</action>
+		    	</then>
+			</if>			
+			
+			<!-- 部署Coframe部分 -->
+			<if>
+		    	<equals arg1="${IS_DEPLOY_COFRAME}" arg2="true"/>
+		    	<then>
+		    		<echo message="...... init db for coframe"/>
+					<action name="Init Coframe Database" classname="com.primeton.installer.platform.action.InitDB" scale="10">
+						<parameter name="COMPONENT_NAMES" value="coframe,coframe-fileupload"/>
+					</action>
+			    	<if>
+				    	<equals arg1="${IS_DEPLOY_BPS}" arg2="true"/>
+				    	<then>
+				    		<echo message="...... init db for bps_coframe"/>
+							<action name="Init BPS_Coframe Database" classname="com.primeton.installer.platform.action.InitDB" scale="60">
+								<parameter name="COMPONENT_NAMES" value="coframe_bps"/>
+							</action>
+				    	</then>
+					</if>
+		    	</then>
+			</if>
+			<if>
+		    	<equals arg1="${IS_DEPLOY_CAP}" arg2="true"/>
+		    	<then>
+		    		<echo message="...... init db for cap"/>
+					<action name="Init CAP Database" classname="com.primeton.installer.platform.action.InitDB" scale="10">
+						<parameter name="COMPONENT_NAMES" value="coframe_cap,cap,workflow-widget"/>
+					</action>
+		    	</then>
+			</if>
+		</then>
+	</if>
+	
+  	<!-- jdbc驱动 -->
+  	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="Tomcat"/>
+		<then>
+			<if>
+		    	<equals arg1="${APP_SERVER_VERSION}" arg2="5.5.20"/>
+		    	<then>
+					<setvalue key="JDBC_TARGET_DIRS" value="${AS_TOMCAT_HOME}/common/lib"/>
+		    	</then>
+		    	<else>
+					<setvalue key="JDBC_TARGET_DIRS" value="${AS_TOMCAT_HOME}/lib"/>
+		    	</else>
+		    </if>
+		</then>
+	</if>
+	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="JBoss"/>
+		<then>
+			<setvalue key="JDBC_TARGET_DIRS" value="${AS_JBOSS_HOME}/server/default/lib"/>
+		</then>
+	</if>
+	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="WebLogic"/>
+		<then>
+			<setvalue key="JDBC_TARGET_DIRS" value="${AS_WL_DOMAIN_HOME}/lib"/>
+			<!-- copy xml jar -->
+			<echo message="copy xml jar"/>
+			<copydir src="${INSTALL_ROOT}/resources/as_comps/lib/xml" dest="${AS_WL_DOMAIN_HOME}/lib"/>
+		</then>
+	</if>
+	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="WebSphere"/>
+		<then>
+			<if>
+				<equals arg1="${IS_CLUSTER}" arg2="true"/>
+				<then>
+					<setvalue key="JDBC_TARGET_DIRS" value="${AS_WAS_PROFILE_HOME}/../../lib/ext"/>
+				</then>
+		    	<else>
+					<setvalue key="JDBC_TARGET_DIRS" value="${AS_WAS_HOME}/lib/ext"/>
+		    	</else>
+		    </if>
+		</then>
+	</if>
+	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="PAS"/>
+		<then>
+			<setvalue key="JDBC_TARGET_DIRS" value="${AS_PAS_HOME}/var/shared/lib"/>
+		</then>
+	</if>
+	
+	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="TongWeb"/>
+		<then>
+			<setvalue key="JDBC_TARGET_DIRS" value="${AS_TONGWEB_HOME}/lib"/>
+		</then>
+	</if>
+	  
+ 	<echo message="copy jdbc jar to ${JDBC_TARGET_DIRS}"/>
+ 	<action name="ACTION.COPYFILE" classname="com.primeton.install.ext.action.CopyJDBCDrivers" desc="复制默认JDBC驱动jar">
+		<parameter name="JDBC_DIR" value="${INSTALL_ROOT}/resources/as_comps/lib/jdbc"/>
+		<parameter name="TARGET_DIRS" value="${JDBC_TARGET_DIRS}"/>
+	</action>
+		
+	<if>
+		<equals arg1="${JAVA_VERSION}" arg2="1.5" function="startsWith"/>
+		<then>
+			<delete file="${JDBC_TARGET_DIRS}/mssqlserver-3.0.jar"/>
+			<delete file="${JDBC_TARGET_DIRS}/dm7jdbcdriver.jar"/>
+		</then>
+    	<else>
+			<delete file="${JDBC_TARGET_DIRS}/mssqlserver-3.0-jdk15.jar"/>
+			<delete file="${JDBC_TARGET_DIRS}/dm7jdbcdriver-jdk15.jar"/>
+    	</else>
+    </if>
+	<!-- DB2 driver jar -->
+    <if>
+		<equals arg1="${DB_TYPE}" arg2="DB2" function="startsWith"/>
+		<then>
+			<if>
+				<equals arg1="${DB_VERSION}" arg2="9.7"/>
+				<then>
+					<delete file="${JDBC_TARGET_DIRS}/db2jcc-0.x.jar"/>
+				</then>
+				<else>
+			        <delete file="${JDBC_TARGET_DIRS}/db2jcc-4.8.86.jar"/>	      
+    	        </else>
+			</if>
+		</then>
+		<else>
+			    <delete file="${JDBC_TARGET_DIRS}/db2jcc-4.8.86.jar"/>
+    	</else> 	
+    </if>
+	
+  	<!-- 脚本check -->
+	<action name="check create run script or not" classname="com.primeton.installer.platform.action.CheckRunScriptTriger"/>	
+	
+	<!-- 对Tomcat应用服务器的处理 -->
+	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="Tomcat"/>
+		<then>					
+		    <!-- 创建配置运行脚本 -->
+		    <if>
+		    	<equals arg1="${CREATE_RUN_SCRIPT}" arg2="true"/>
+		    	<then>
+		    		<echo message="......create run scripts"/>
+					<copydir src="${INSTALL_ROOT}/resources/as_comps/tomcat/${APP_SERVER_VERSION}/startscript" dest="${INSTALL_DIR}"/>
+					<action name="update scripts" classname="com.primeton.install.ext.action.UpdateTomcatRunScripts">
+						<parameter name="DIR" value="${INSTALL_DIR}"/>
+					</action>		    	
+		    	</then>
+		    </if>
+		</then>
+	</if>
+	
+	<!-- 对JBoss应用服务器的处理 -->
+	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="JBoss"/>
+		<then>					
+			<!-- 创建配置运行脚本 -->
+		    <if>
+		    	<equals arg1="${CREATE_RUN_SCRIPT}" arg2="true"/>
+		    	<then>
+		    		<echo message ="......create run scripts"/>	
+					<copydir src="${INSTALL_ROOT}/resources/as_comps/jboss/${APP_SERVER_VERSION}/startscript" dest="${INSTALL_DIR}"/>
+					<action name="UpdateJBossRunScripts" classname="com.primeton.install.ext.action.UpdateJBossRunScripts">
+						<parameter name="DIR" value="${INSTALL_DIR}"/>
+					</action>
+					<if>
+						<equals arg1="${APP_SERVER_VERSION}" arg2="6.1.0"/>
+		    			<then>
+							<copydir src="${INSTALL_ROOT}/resources/as_comps/lib/jdom" dest="${AS_JBOSS_HOME}/server/default/lib"/>
+							<copydir src="${INSTALL_ROOT}/resources/as_comps/lib/bouncycastle" dest="${AS_JBOSS_HOME}/server/default/lib"/>
+							<action name="setCallByValue" classname="com.primeton.install.ext.action.SetXMLNodeValue">
+								<parameter name="FILE_PATH" value="${AS_JBOSS_HOME}/server/default/deployers/ear-deployer-jboss-beans.xml" />
+								<parameter name="XPATH" value="//property[@name='callByValue']" />
+								<parameter name="NODE_VALUE" value="true" />
+							</action>
+							<action name="setIsolated" classname="com.primeton.install.ext.action.SetXMLNodeValue">
+								<parameter name="FILE_PATH" value="${AS_JBOSS_HOME}/server/default/deployers/ear-deployer-jboss-beans.xml" />
+								<parameter name="XPATH" value="//property[@name='isolated']" />
+								<parameter name="NODE_VALUE" value="true" />
+							</action>	
+		    			</then>
+					</if>    	
+		    	</then>
+		    </if>
+		</then>
+	</if>
+
+	<!-- 对weblogic应用服务器的处理 -->
+	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="WebLogic"/>
+		<then>					
+			<if>
+				<equals arg1="${IS_CLUSTER}" arg2="true"/>
+				<then>
+					<action name="Get target cluster IP" classname="com.primeton.installer.platform.action.GetTagetWLClusterInfo"/>
+				</then>
+			</if>
+			
+    		<!---********************************-->
+    		<!-- 启动weblogic应用服务器,注意启动weblogic应该放在配置数据源和jms等服务器配置之前 -->
+    		<!---********************************-->
+    		<echo message="start webloigc "/>
+    		
+    		<setvalue key="DONE_START_WEBLOGIC" value="false"/>
+
+    		<setvalue key="TEMP_EXTERNAL_CONFIG_DIR" value="${TEMP_DIR}/temp_eos_apps_config"/>
+			<action name="start webloigc" classname="com.primeton.install.ext.action.StartupWeblogicServer" scale="10">
+				<parameter name="JVM_ARGS" value="-Djavax.xml.stream.XMLInputFactory=weblogic.xml.stax.XMLStreamInputFactory -Djavax.xml.stream.XMLOutputFactory=weblogic.xml.stax.XMLStreamOutputFactory -Djavax.xml.stream.XMLEventFactory=weblogic.xml.stax.EventFactory -Xms256m -Xmx256m -XX:MaxNewSize=256m -XX:MaxPermSize=256m -DEXTERNAL_CONFIG_DIR=${TEMP_EXTERNAL_CONFIG_DIR}"/>
+			</action>
+
+			<!---********************************-->
+			<!-- 复制启动脚本到安装目录，并修改启动脚本,集群的时候不需要复制启动脚本 -->
+			<!---******************************** -->
+			<if>
+				<equals arg1="${IS_CLUSTER}" arg2="true"/>
+				<then/>
+				<else>
+					<!-- 创建配置运行脚本 -->
+		    		<if>
+		    			<equals arg1="${CREATE_RUN_SCRIPT}" arg2="true"/>
+		    			<then>
+							<echo message="update start scripts"/>
+							<copydir src="${INSTALL_ROOT}/resources/as_comps/weblogic/${APP_SERVER_VERSION}/startscript" dest="${INSTALL_DIR}"/>
+							<action name="Update run's Script" classname="com.primeton.install.ext.action.UpdateWeblogicRunScripts">
+								<parameter name="DIR" value="${INSTALL_DIR}"/>
+							</action>		    	
+		    			</then>
+		  			  </if>			
+				</else>
+			</if>				
+		</then>
+	</if>
+
+	<!-- 对webSphere应用服务器的处理 -->
+	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="WebSphere"/>
+		<then>
+		    <setvalue key="DONE_START_WAS" value="false"/>
+			<echo message="**************APP_SERVER_VERSION: ${APP_SERVER_VERSION}"/>
+			<if>
+				<equals arg1="${IS_CLUSTER}" arg2="true"/>
+		    	<then>	
+    				<setvalue key="WAS_ENV" value="CLUSTER"/>	
+					
+					<!-- 设置JVM参数 -->
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASClusterJvmParam">
+						<parameter name="PARAM_NAME" value="JCEProvider"/>
+						<parameter name="PARAM_VALUE" value="IBMJCE"/>
+					</action>
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASClusterJvmParam">
+						<parameter name="PARAM_NAME" value="Xgcpolicy"/>
+						<parameter name="PARAM_VALUE" value="gencon"/>
+					</action>
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASClusterJvmParam">
+						<parameter name="PARAM_NAME" value="java.net.preferIPv4Stack"/>
+						<parameter name="PARAM_VALUE" value="true"/>
+					</action>
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASClusterJvmParam">
+						<parameter name="PARAM_NAME" value="com.ibm.websphere.orb.uniqueServerName"/>
+						<parameter name="PARAM_VALUE" value="true"/>
+					</action>
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASClusterJvmParam">
+						<parameter name="PARAM_NAME" value="java.awt.headless"/>
+						<parameter name="PARAM_VALUE" value="true"/>
+					</action>
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASClusterJvmParam">
+						<parameter name="PARAM_NAME" value="javax.xml.soap.SAAJMetaFactory"/>
+						<parameter name="PARAM_VALUE" value="com.sun.xml.messaging.saaj.soap.SAAJMetaFactoryImpl"/>
+					</action>	
+		    	</then>
+    			<else>
+					<setvalue key="WAS_ENV" value="STAND_ALONE"/>
+					
+		  			<action name="GET WAS HOME" classname="com.primeton.installer.platform.action.GetWasHomeAction"/>
+		  			
+					<!-- 启动WAS -->
+					<action name="start WAS" classname="com.primeton.install.ext.action.StartWebSphere" scale="10"/>
+					
+					<!-- 设置JVM参数 -->
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+						<parameter name="PARAM_NAME" value="JCEProvider"/>
+						<parameter name="PARAM_VALUE" value="IBMJCE"/>
+					</action>					
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+						<parameter name="PARAM_NAME" value="Xgcpolicy"/>
+						<parameter name="PARAM_VALUE" value="gencon"/>
+					</action>
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+						<parameter name="PARAM_NAME" value="com.ibm.websphere.orb.uniqueServerName"/>
+						<parameter name="PARAM_VALUE" value="true"/>
+					</action>
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+						<parameter name="PARAM_NAME" value="java.awt.headless"/>
+						<parameter name="PARAM_VALUE" value="true"/>
+					</action>
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+						<parameter name="PARAM_NAME" value="java.net.preferIPv4Stack"/>
+						<parameter name="PARAM_VALUE" value="true"/>
+					</action>
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+						<parameter name="PARAM_NAME" value="javax.xml.soap.SAAJMetaFactory"/>
+						<parameter name="PARAM_VALUE" value="com.sun.xml.messaging.saaj.soap.SAAJMetaFactoryImpl"/>
+					</action>
+					<action name="set JVM" classname="com.primeton.install.ext.action.SetWASJvmParam">
+						<parameter name="PARAM_NAME" value="EXTERNAL_CONFIG_DIR"/>
+						<parameter name="PARAM_VALUE" value="${INSTALL_DIR}/apps_config"/>
+					</action>
+					
+					<!-- 设置 WebContainer 参数 -->
+					<action name="set WebContainer" classname="com.primeton.install.ext.action.SetWASWebContainerParam">
+						<parameter name="PARAM_NAME" value="com.ibm.ws.webcontainer.invokefilterscompatibility"/>
+						<parameter name="PARAM_VALUE" value="true"/>
+					</action>
+					
+					<if>
+						<equals arg1="${APP_SERVER_VERSION}" arg2="8.5"/>
+		    			<then>
+						<action name="set WebContainer" classname="com.primeton.install.ext.action.SetWASWebContainerParam">
+							<parameter name="PARAM_NAME" value="com.ibm.ws.webcontainer.setcontenttypebysetheader"/>
+							<parameter name="PARAM_VALUE" value="false"/>
+						</action>
+						</then>
+					</if>
+					
+					<!-- 创建配置运行脚本 -->
+		    		<if>
+		    			<equals arg1="${CREATE_RUN_SCRIPT}" arg2="true"/>
+		    			<then>
+							<action name="Run scripts" classname="com.primeton.install.ext.action.CreateWASRunScripts" desc="Run Scripts"/>		    	
+		    			</then>
+		  			</if>	
+				</else>
+			</if>
+		</then>
+	</if>
+	
+	<!-- 对PAS应用服务器的处理 -->
+	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="PAS"/>
+		<then>								
+		    <!-- 创建配置运行脚本 -->
+		    <if>
+		    	<equals arg1="${CREATE_RUN_SCRIPT}" arg2="true"/>
+		    	<then>
+		    		<echo message="......create run scripts"/>
+					<copydir src="${INSTALL_ROOT}/resources/as_comps/pas/${APP_SERVER_VERSION}/startscript" dest="${INSTALL_DIR}"/>
+					<action name="update scripts" classname="com.primeton.installer.platform.pas.UpdatePASRunScripts">
+						<parameter name="DIR" value="${INSTALL_DIR}"/>
+					</action>		    	
+		    	</then>
+		    </if>
+		</then>
+	</if>
+	
+	<!-- 对TongWeb应用服务器的处理 -->
+	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="TongWeb"/>
+		<then>					
+		    <!-- 创建配置运行脚本 -->
+		    <if>
+		    	<equals arg1="${CREATE_RUN_SCRIPT}" arg2="true"/>
+		    	<then>
+		    		<echo message="......create run scripts"/>
+					<copydir src="${INSTALL_ROOT}/resources/as_comps/tongweb/${APP_SERVER_VERSION}/startscript" dest="${INSTALL_DIR}"/>
+					<action name="update scripts" classname="com.primeton.install.ext.action.UpdateTongWebRunScripts">
+						<parameter name="DIR" value="${INSTALL_DIR}"/>
+					</action>		    	
+		    	</then>
+		    </if>
+		</then>
+	</if>
+</deploy>

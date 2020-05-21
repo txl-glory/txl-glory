@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>
+	<mkdir dir="${INSTALL_DIR}"/>
+	
+	<echo message="...... export context init"/>
+	<action name="export context init" classname="com.primeton.installer.platform.action.ExportContext2Properties" desc="export context" >
+		<parameter name="EXPORT_FILE" value="${INSTALL_DIR}/install-context.properties"/>
+	</action>
+	
+	<if>
+    	<equals arg1="${IS_REPEAT_INSTALLED}" arg2="true"/>
+    	<then/>
+		<else>
+			<echo message="......check jdk for ${APP_SERVER_NAME}"/>
+			<action name="deploy jdk" classname="com.primeton.install.ext.action.DeployJDK" strategy="quit" scale="30">
+				<parameter name="APPSVR_TYPE" value="${APP_SERVER_NAME}"/>
+			</action>
+			<action name="init appsvr" classname="com.primeton.install.ext.action.InitAppsvr" strategy="ignore">
+				<parameter name="APPSVR_TYPE" value="${APP_SERVER_TYPE}"/>
+			</action>
+    	</else>
+	</if>
+	
+	<!--  
+	<if>
+		<equals arg1="${APP_SERVER_NAME}" arg2="PAS"/>
+		<then>
+			<setvalue key="AS_PAS_HOME" value="${INSTALL_DIR}/pas-6.0" />
+			<echo message="...... unzip ${INSTALL_ROOT}/resources/as_comps/pas/6.0/pas-6.0.zip to ${AS_PAS_HOME}" />
+			<unzip src="${INSTALL_ROOT}/resources/as_comps/pas/6.0/pas-6.0.zip" dest="${AS_PAS_HOME}" scale="30" />
+		</then>
+	</if>
+	-->
+	
+	<action name="deploy base components" classname="com.primeton.install.action.DeployBaseComps" desc="Deploy base components">
+	</action>
+
+	<action name="deploy option components" classname="com.primeton.install.action.DeployOptionComps" desc="Deploy option components">
+	</action>
+
+	<if>
+		<equals arg1="${DONE_START_WAS}" arg2="true"/>
+		<then>
+			<echo message="......stop was"/>
+			<action name="stop WAS" classname="com.primeton.install.ext.action.StopWebsphere" strategy="ignore" scale="5"/>
+		</then>
+	</if>
+
+	<if>
+		<equals arg1="${DONE_START_WEBLOGIC}" arg2="true"/>
+		<then>
+			<action name="stop webloigc" classname="com.primeton.install.ext.action.StopWeblogicServer" desc="" scale="5"/>
+			<!-- 删除启动时设置的外置目录 -->
+			<delete dir="${TEMP_EXTERNAL_CONFIG_DIR}"/>
+		</then>
+	</if>
+
+      <if>
+		<equals arg1="${IS_CLUSTER}" arg2="true"/>
+		<then/>
+		<else>
+			<if>
+				<equals arg1="${IS_REPEAT_INSTALLED}" arg2="true"/>
+				<then>
+					<echo message="......update domain.xml"/>
+					<action name="update domain.xml" classname="com.primeton.installer.platform.action.UpdateDomainConfigByRepeatInstall" desc="update domain.xml"/>
+		    	</then>
+				<else>
+					<echo message="......create shortcut"/>
+					<action name="create shortcut" classname="com.primeton.installer.platform.action.CreateShortcut" desc="Start Menu">
+						<parameter name="KEYWORD" value="${shortcutKeyword}"/>
+					</action>
+					<copyfile src="${INSTALL_ROOT}/installer/readme.txt" dest="${INSTALL_DIR}/readme.txt"/>
+					<copyfile src="${INSTALL_ROOT}/installer/readme_cn.txt" dest="${INSTALL_DIR}/readme_cn.txt"/>
+    			</else>
+			</if>			
+		</else>
+	</if>
+	
+	<if>
+    	<equals arg1="${IS_REPEAT_INSTALLED}" arg2="true"/>
+    	<then/>
+		<else>
+			<echo message="......register product"/>
+			<action name="register this" classname="com.primeton.installer.platform.action.RegisterProduct" desc="Register Product" strategy="ignore"/>
+    		<!-- 拷贝 tools -->
+    		<copyfile src="${INSTALL_ROOT}/installer/bin/cpappend.cmd" dest="${INSTALL_DIR}/tools/bin/cpappend.cmd"/>
+    		<copyfile src="${INSTALL_ROOT}/installer/bin/deployResources.cmd" dest="${INSTALL_DIR}/tools/bin/deployResources.cmd"/>
+    		<copyfile src="${INSTALL_ROOT}/installer/bin/deployResources.sh" dest="${INSTALL_DIR}/tools/bin/deployResources.sh"/>
+    		<copyfile src="${INSTALL_ROOT}/installer/config/deployResources.properties" dest="${INSTALL_DIR}/tools/bin/deployResources.properties"/>
+  				<copyfile src="${INSTALL_ROOT}/installer/config/appsvr-supported.xml" dest="${INSTALL_DIR}/tools/config/appsvr-supported.xml"/>
+    		<copyfile src="${INSTALL_ROOT}/installer/config/dbsvr-supported.xml" dest="${INSTALL_DIR}/tools/config/dbsvr-supported.xml"/>
+    		<copyfile src="${INSTALL_ROOT}/installer/config/log4j.properties" dest="${INSTALL_DIR}/tools/config/log4j.properties"/>
+    		<copyfile src="${INSTALL_ROOT}/installer/config/deployResources.xml" dest="${INSTALL_DIR}/tools/config/deployResources.xml"/>
+    		<copydir src="${INSTALL_ROOT}/installer/lib" dest="${INSTALL_DIR}/tools/lib"/>	    	
+    	</else>
+	</if>						
+	
+	<echo message="......create install.inf"/>
+	<action name="create install.inf" classname="com.primeton.install.ext.action.CreateInstallInfFile" desc="Create install.inf" strategy="ignore"/>
+	<echo message="......export context for validate"/>
+	<action name="export context 4 validate" classname="com.primeton.installer.platform.action.ExportContext2Properties" desc="export context" >
+		<parameter name="EXPORT_FILE" value="${INSTALL_DIR}/install-context.properties"/>
+	</action>
+	<copyfile src="${INSTALL_LOGFILE_PATH}" dest="${INSTALL_DIR}/${INSTALL_LOGFILE_NAME}"/>
+	<echo message="OK............................................" />
+</deploy>

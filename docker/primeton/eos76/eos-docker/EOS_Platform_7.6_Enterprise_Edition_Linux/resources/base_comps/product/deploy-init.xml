@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>
+	<setvalue key="IS_BPS_JAVA_EDITION" value="false"/>
+	<setvalue key="IS_DEPLOY_BPSCLIENT" value="true"/>
+</deploy>

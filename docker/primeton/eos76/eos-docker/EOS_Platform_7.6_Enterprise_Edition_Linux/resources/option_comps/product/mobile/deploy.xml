@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>
+	<if>
+		<equals arg1="${IS_DEPLOY_MOBILE}" arg2="true"/>
+		<then>
+			<echo message="...... unzip ${INSTALL_ROOT}/resources/option_comps/product/mobile/mobile.zip to ${INSTALL_DIR}/mobile/server/"/>
+			<unzip src="${INSTALL_ROOT}/resources/option_comps/product/mobile/mobile.zip" dest="${INSTALL_DIR}/mobile/server/" scale="5"/>
+			
+			<echo message="...... unzip ${INSTALL_ROOT}/resources/option_comps/product/mobile/build-tools.zip to ${INSTALL_DIR}/mobile/build-tools"/>
+			<unzip src="${INSTALL_ROOT}/resources/option_comps/product/mobile/build-tools.zip" dest="${INSTALL_DIR}/mobile/build-tools" scale="5"/>
+			
+			<echo message="...... unzip ${INSTALL_ROOT}/resources/option_comps/product/mobile/client.zip to ${INSTALL_DIR}/mobile/client"/>
+			<unzip src="${INSTALL_ROOT}/resources/option_comps/product/mobile/client.zip" dest="${INSTALL_DIR}/mobile/client" scale="5"/>
+		</then>
+	</if>
+</deploy>

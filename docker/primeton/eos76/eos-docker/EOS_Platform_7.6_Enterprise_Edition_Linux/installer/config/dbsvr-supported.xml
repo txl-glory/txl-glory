@@ -1,0 +1,13 @@
+<servers>
+	<server name="MySql" version="5.0/5.5/5.6" editorPanel="com.primeton.install.ext.gui.db.MySqlEditorPanel" jars="mysql-connector-java-3.1.12.jar"/>
+	<server name="Oracle" version="9i/10g/11g/12c" editorPanel="com.primeton.install.ext.gui.db.OracleEditorPanel" jars="ojdbc14-10.2.0.2.0.jar"/>
+	<server name="DB2 UDB" version="8.2/9.5" editorPanel="com.primeton.install.ext.gui.db.DB2EditorPanel" jars="db2jcc-0.x.jar"/>
+	<server name="DB2 UDB" version="9.7" editorPanel="com.primeton.install.ext.gui.db.DB2EditorPanel" jars="db2jcc-4.8.86.jar"/>
+	<server name="SQLServer" version="2000/2005/2008/2012" editorPanel="com.primeton.install.ext.gui.db.SqlServerEditorPanel" jars="mssqlserver-3.0.jar"/>
+	<!-- <server name="Sybase" version="12.5/15.0" editorPanel="com.primeton.install.ext.gui.db.SybaseEditorPanel" jars="sybase_jconn.jar"/> -->
+	<!-- <server name="Informix" version="9.4" editorPanel="com.primeton.install.ext.gui.db.InformixEditorPanel" jars="infomixjdbc.jar"/> -->
+	<server name="KingbaseES" version="V7" editorPanel="com.primeton.install.ext.gui.db.KingbaseESEditorPanel" jars="kingbasejdbc4-7.1.2.0250.jar"/>
+	<server name="DM" version="V7" editorPanel="com.primeton.install.ext.gui.db.DMEditorPanel" jars="Dm7JdbcDriver16.jar"/>
+	<server name="GBase" version="8s" editorPanel="com.primeton.install.ext.gui.db.GBaseEditorPanel" jars="gbase-connector-java-8.3.jar"/>
+	<server name="Oscar" version="7.0" editorPanel="com.primeton.install.ext.gui.db.OscarEditorPanel" jars="oscarJDBC.jar"/>
+</servers>

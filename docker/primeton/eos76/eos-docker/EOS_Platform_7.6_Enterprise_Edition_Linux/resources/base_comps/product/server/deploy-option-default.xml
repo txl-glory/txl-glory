@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>			
+	<!-- 部署Coframe部分 -->
+	<if>
+    	<equals arg1="${IS_DEPLOY_COFRAME}" arg2="true"/>
+    	<then>
+    		<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/server/coframe-default.war to ${__WAR_DIR}"/>
+		    <unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/coframe-default.war" dest="${__WAR_DIR}" scale="5"/>		  	   		
+    	</then>
+	</if>
+	
+	<!-- 部署BPS部分 -->
+	<if>
+    	<equals arg1="${IS_DEPLOY_BPS}" arg2="true"/>
+    	<then>
+    		<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/server/bps-default.war to ${__WAR_DIR}"/>
+		    <unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/bps-default.war" dest="${__WAR_DIR}" scale="10"/>	
+    		<if>
+		    	<equals arg1="${IS_DEPLOY_COFRAME}" arg2="true"/>
+		    	<then>
+		    		<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/server/coframe-bps-default.war to ${__WAR_DIR}"/>
+		    		<unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/coframe-bps-default.war" dest="${__WAR_DIR}" scale="5"/>		  	   		
+		    	</then>
+			</if>
+			<if>
+		    	<equals arg1="${IS_DEPLOY_BPSCLIENT}" arg2="true"/>
+		    	<then>
+		    		<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/server/bps-client-default.war to ${__WAR_DIR}"/>
+		    		<unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/bps-client-default.war" dest="${__WAR_DIR}" scale="5"/>		  	   		
+				</then>
+			</if>
+			<unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/bpff-default.war" dest="${__WAR_DIR}" scale="10"/>	
+    	</then>
+	</if>
+	
+	<!-- 部署CAP部分 -->
+	<if>
+    	<equals arg1="${IS_DEPLOY_CAP}" arg2="true"/>
+    	<then>
+    		<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/server/cap-default.war to ${__WAR_DIR}"/>
+    		<unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/cap-default.war" dest="${__WAR_DIR}" scale="50"/>
+    		<delete dir="${TEMP_DIR}/__see.war"/>
+    		<unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/eos-default.war" dest="${TEMP_DIR}/__see.war" scale="15"/>
+    		<unzip src="${INSTALL_ROOT}/resources/as_comps/tomcat/eos-default.war" dest="${TEMP_DIR}/__see.war" scale="1"/>
+    		<unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/bps-default.war" dest="${TEMP_DIR}/__see.war" scale="10"/>
+    		<unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/cap-default.war" dest="${TEMP_DIR}/__see.war" scale="50"/>
+    		<zip destfile="${__WAR_DIR}/WEB-INF/_srv/template/war/default.war" basedir="${TEMP_DIR}/__see.war" scale="20"/>
+			<delete dir="${TEMP_DIR}/__see.war"/>
+    	</then>
+	</if>
+	
+	<!-- 部署Mobile部分 -->
+	<if>
+    	<equals arg1="${IS_DEPLOY_MOBILE}" arg2="true"/>
+    	<then>
+    		<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/server/mobile-default.war to ${__WAR_DIR}"/>
+		    <unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/mobile-default.war" dest="${__WAR_DIR}" scale="10"/>
+    	</then>
+	</if>
+	
+	<!-- 部署Coframe部分，修改配置文件 -->
+	<if>
+    	<equals arg1="${IS_DEPLOY_COFRAME}" arg2="true"/>
+    	<then>
+    		<action name="add exclude login" classname="com.primeton.install.ext.action.AppendXMLNodeValue">
+		    	<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/_srv/config/user-config.xml"/>
+		    	<parameter name="XPATH" value="//module[@name='Access-Http']/group[@name='Login-Filter']/configValue[@key='Exclude']"/>
+		    	<parameter name="NODE_VALUE" value=",/coframe/index.jsp,**/org.gocom.components.coframe.auth.LoginManager.login.biz.ext,**/org.gocom.components.coframe.auth.login.login.flow,/coframe/auth/login/login.jsp"/>
+		    </action>
+    		<action name="set login jsp" classname="com.primeton.install.ext.action.SetXMLNodeValue">
+		    	<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/_srv/config/user-config.xml"/>
+		    	<parameter name="XPATH" value="//module[@name='Access-Http']/group[@name='Login-Filter']/configValue[@key='LoginPage']"/>
+		    	<parameter name="NODE_VALUE" value="/coframe/index.jsp"/>
+		    </action>
+		    <echo message ="......config web.xml for login page"/>
+    		<action name="config config web.xml for login page" classname="com.primeton.install.ext.action.InsertXMLNode">
+  	    		<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/web.xml"/>
+  	    		<parameter name="XPATH" value="//web-app/welcome-file-list"/>
+  	    		<parameter name="IS_APPEND_NODE" value="true"/>
+				<parameter name="XML_STRING">
+			    	<![CDATA[
+		    			<welcome-file>coframe/index.jsp</welcome-file>
+			    	]]> 
+			    </parameter>
+  	   		</action>	  	   		
+    	</then>
+	</if>			
+	
+	<!-- 部署BPS部分，修改配置文件 -->
+	<if>
+    	<equals arg1="${IS_DEPLOY_BPS}" arg2="true"/>
+    	<then>
+  	   		<echo message="config web.xml for bps webservice api"/>
+			<!-- 修改default应用web.xml for WebService -->
+		    <action name="config web.xml for bps webservice api" classname="com.primeton.install.ext.action.InsertXMLNode">
+		    	<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/web.xml"/>
+				<parameter name="XPATH" value="//web-app/servlet-mapping"/>
+				<parameter name="XML_STRING">
+			    	<![CDATA[
+		    			<servlet-mapping>
+					        <servlet-name>ControllerServlet</servlet-name>
+					        <url-pattern>/WSActivityInstManagerService</url-pattern>
+					    </servlet-mapping>
+					    <servlet-mapping>
+					        <servlet-name>ControllerServlet</servlet-name>
+					        <url-pattern>/WSAgentManagerService</url-pattern>
+					    </servlet-mapping>
+					    <servlet-mapping>
+					        <servlet-name>ControllerServlet</servlet-name>
+					        <url-pattern>/WSAppointActivityManagerService</url-pattern>
+					    </servlet-mapping>
+					    <servlet-mapping>
+					        <servlet-name>ControllerServlet</servlet-name>
+					        <url-pattern>/WSBackActivityManagerService</url-pattern>
+					    </servlet-mapping>
+					    <servlet-mapping>
+					        <servlet-name>ControllerServlet</servlet-name>
+					        <url-pattern>/WSDefinitionQueryManagerService</url-pattern>
+					    </servlet-mapping>
+					    <servlet-mapping>
+					        <servlet-name>ControllerServlet</servlet-name>
+					        <url-pattern>/WSDelegateManagerService</url-pattern>
+					    </servlet-mapping>
+					    <servlet-mapping>
+					        <servlet-name>ControllerServlet</servlet-name>
+					        <url-pattern>/WSFreeFlowManagerService</url-pattern>
+					    </servlet-mapping>
+					    <servlet-mapping>
+					        <servlet-name>ControllerServlet</servlet-name>
+					        <url-pattern>/WSProcessInstManagerService</url-pattern>
+					    </servlet-mapping>
+					    <servlet-mapping>
+					        <servlet-name>ControllerServlet</servlet-name>
+					        <url-pattern>/WSRelativeDataManagerService</url-pattern>
+					    </servlet-mapping>
+					    <servlet-mapping>
+					        <servlet-name>ControllerServlet</servlet-name>
+					        <url-pattern>/WSWorkItemDrawbackManagerService</url-pattern>
+					    </servlet-mapping>
+					    <servlet-mapping>
+					        <servlet-name>ControllerServlet</servlet-name>
+					        <url-pattern>/WSWorkItemManagerService</url-pattern>
+					    </servlet-mapping>
+					    <servlet-mapping>
+					        <servlet-name>ControllerServlet</servlet-name>
+					        <url-pattern>/WSWorklistQueryManagerService</url-pattern>
+					    </servlet-mapping>
+			    	]]> 
+			    </parameter>
+    	    </action>
+		    <echo message ="......config user-local-config"/>
+    		<action name="config user-local-config" classname="com.primeton.install.ext.action.InsertXMLNode">
+  	    		<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/_srv/config/user-local-config.xml"/>
+  	    		<parameter name="XPATH" value="//module[@name='SecuritySetting']"/>
+  	    		<parameter name="IS_APPEND_NODE" value="true"/>
+				<parameter name="XML_STRING">
+			    	<![CDATA[
+		    			<group name="http">
+				            <configValue key="needAuthention">true</configValue>
+				            <configValue key="user">bps</configValue>
+				            <configValue key="password">000000</configValue>
+				        </group>
+			    	]]> 
+			    </parameter>
+  	   		</action>
+  	   		
+  	   		<if>
+		    	<equals arg1="${IS_DEPLOY_COFRAME}" arg2="true"/>
+		    	<then>
+		    		<action name="set omservice_provider class" classname="com.primeton.install.ext.action.SetXMLNodeValue">
+				    	<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/_srv/config/wfengine-config.xml"/>
+				    	<parameter name="XPATH" value="//module[@name='wfomservice']/group[@name='omservice_provider']/configValue[@key='class']"/>
+				    	<parameter name="NODE_VALUE" value="org.gocom.components.coframe.bps.om.WFOMServiceImpl"/>
+				    </action>
+		    		<action name="set permission_provider class" classname="com.primeton.install.ext.action.SetXMLNodeValue">
+				    	<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/_srv/config/wfengine-config.xml"/>
+				    	<parameter name="XPATH" value="//module[@name='wfomservice']/group[@name='permission_provider']/configValue[@key='class']"/>
+				    	<parameter name="NODE_VALUE" value="org.gocom.components.coframe.bps.om.WFOMPermissionImpl"/>
+				    </action>
+		    	</then>
+			</if>
+			<if>
+		    	<equals arg1="${IS_DEPLOY_BPSCLIENT}" arg2="true"/>
+		    	<then>
+				    <!-- 如果是bps4java版本 -->
+					<if>
+				    	<equals arg1="${IS_BPS_JAVA_EDITION}" arg2="true"/>
+				    	<then>
+				    		<action name="add listener" classname="com.primeton.install.ext.action.InsertXMLNode">
+						    	<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/web.xml"/>
+						    	<parameter name="XPATH" value="//web-app/filter"/>
+						    	<parameter name="XML_STRING">
+						    		<![CDATA[
+						    		<listener>
+						    			<listener-class>org.gocom.bps.wfclient.BpsClientListener</listener-class>
+						    		</listener>
+						    		
+									 <context-param>
+										<param-name>isOpenSecurity</param-name>
+										<param-value>false</param-value>
+									 </context-param>
+									 <context-param>
+										<param-name>isAllInHttps</param-name>
+										<param-value>false</param-value>
+									 </context-param>
+									 <context-param>
+										<param-name>host</param-name>
+										<param-value>localhost</param-value>
+									 </context-param>
+									 <context-param>
+										<param-name>http-port</param-name>
+										<param-value>8080</param-value>
+									 </context-param>
+									 <context-param>
+										<param-name>https-port</param-name>
+										<param-value>8443</param-value>
+									 </context-param>
+									
+								    <filter>
+										<filter-name>SecurityFilter</filter-name>
+										<filter-class>org.gocom.bps.wfclient.security.HttpSecurityFilter</filter-class>
+										
+										<init-param>
+											<param-name>Exclude</param-name>
+											<param-value></param-value>
+										</init-param>
+										<init-param>
+											<param-name>regexs</param-name>
+											<param-value>eval\s*?\([^\)]+?\),alert\s*?\([^\)]+?\),new\s+?Function\s*?\([^\)]+?\),window\[[^\]]+?\]\s*?=</param-value>
+										</init-param>
+									</filter>
+									
+									<filter-mapping>
+										<filter-name>SecurityFilter</filter-name>
+										<url-pattern>/rest/services/*</url-pattern>
+									</filter-mapping>
+									
+									<filter-mapping>
+										<filter-name>SecurityFilter</filter-name>
+										<url-pattern>*.jsp</url-pattern>
+									</filter-mapping>
+					    		
+						    		]]> 
+						    	</parameter>
+						    </action>
+				    		<action name="add exclude login" classname="com.primeton.install.ext.action.AppendXMLNodeValue">
+						    	<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/_srv/config/user-config.xml"/>
+						    	<parameter name="XPATH" value="//module[@name='Access-Http']/group[@name='Login-Filter']/configValue[@key='Exclude']"/>
+						    	<parameter name="NODE_VALUE" value=",/bps/wfclient/index.jsp,/bps/wfclient/login/login.jsp,/rest/services/bps/wfclient/login/login,/bps/wfclient/login/validate4Login.jsp"/>
+						    </action>				    		
+						</then>
+						<else>
+				    		<action name="add exclude login" classname="com.primeton.install.ext.action.AppendXMLNodeValue">
+						    	<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/_srv/config/user-config.xml"/>
+						    	<parameter name="XPATH" value="//module[@name='Access-Http']/group[@name='Login-Filter']/configValue[@key='Exclude']"/>
+						    	<parameter name="NODE_VALUE" value=",/bps/wfclient/index.jsp,/bps/wfclient/login/login.jsp,**/org.gocom.bps.wfclient.login.login.validateLogin.biz.ext,/bps/wfclient/login/validate4Login.jsp"/>
+						    </action>
+						</else>
+					</if>
+					<if>
+				    	<equals arg1="${IS_DEPLOY_COFRAME}" arg2="true"/>
+				    	<then>
+				    	</then>
+						<else>
+				    		<action name="set login jsp" classname="com.primeton.install.ext.action.SetXMLNodeValue">
+						    	<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/_srv/config/user-config.xml"/>
+						    	<parameter name="XPATH" value="//module[@name='Access-Http']/group[@name='Login-Filter']/configValue[@key='LoginPage']"/>
+						    	<parameter name="NODE_VALUE" value="/bps/wfclient/index.jsp"/>
+						    </action>
+							<echo message ="......config web.xml for login page"/>
+				    		<action name="config config web.xml for login page" classname="com.primeton.install.ext.action.InsertXMLNode">
+				  	    		<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/web.xml"/>
+				  	    		<parameter name="XPATH" value="//web-app/welcome-file-list"/>
+				  	    		<parameter name="IS_APPEND_NODE" value="true"/>
+								<parameter name="XML_STRING">
+							    	<![CDATA[
+						    			<welcome-file>bps/wfclient/index.jsp</welcome-file>
+							    	]]> 
+							    </parameter>
+				  	   		</action>
+				  	   	</else>
+					</if>	
+		    	</then>
+			</if>  	  	   		
+    	</then>
+	</if>
+	
+	<!-- 部署CAP部分，修改配置文件 -->
+	<if>
+    	<equals arg1="${IS_DEPLOY_CAP}" arg2="true"/>
+    	<then>	
+	   		<action name="set login jsp" classname="com.primeton.install.ext.action.SetXMLNodeValue">
+		    	<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/_srv/config/user-config.xml"/>
+		    	<parameter name="XPATH" value="//module[@name='Access-Http']/group[@name='Login-Filter']/configValue[@key='LoginPage']"/>
+		    	<parameter name="NODE_VALUE" value="/coframe/auth/login/login.jsp"/>
+		    </action>			    
+  	   		<echo message="config web.xml for cap"/>
+    	    <action name="config cap" classname="com.primeton.install.ext.action.InsertXMLNode">
+				<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/web.xml"/>
+				<parameter name="XPATH" value="//web-app/servlet"/>
+				<parameter name="XML_STRING">
+			    	<![CDATA[
+			    		<!-- sso config
+						<filter>
+							<filter-name>SSO Filter</filter-name>
+							<filter-class>edu.yale.its.tp.cas.client.filter.CASFilter</filter-class>
+							<init-param>
+								<param-name>edu.yale.its.tp.cas.client.filter.loginUrl</param-name>
+								<param-value>http://localhost:8001/portal/sso.login</param-value>
+							</init-param>
+							<init-param>
+								<param-name>edu.yale.its.tp.cas.client.filter.validateUrl</param-name>
+								<param-value>http://127.0.0.1:8080/sso-server/serviceValidate</param-value>
+							</init-param>
+							<init-param>
+								<param-name>edu.yale.its.tp.cas.client.filter.serverName</param-name>
+								<param-value>localhost:8001</param-value>
+							</init-param>
+							<init-param>
+								<param-name>edu.yale.its.tp.cas.client.filter.initContextClass</param-name>
+								<param-value>org.gocom.components.coframe.init.CapInitContenxtAdapter</param-value>
+							</init-param>
+							<init-param>
+								<param-name>edu.yale.its.tp.cas.client.filter.userLoginMark</param-name>
+								<param-value>userObject</param-value>
+							</init-param>
+							<init-param>
+								<param-name>edu.yale.its.tp.cas.client.filter.filterExclusion</param-name>
+								<param-value>/default/coframe/auth/login/login.jsp,/default/coframe/auth/login/org.gocom.components.coframe.auth.LoginManager.login.biz.ext</param-value>
+							</init-param>
+						</filter>
+						<filter-mapping>
+							<filter-name>SSO Filter</filter-name>
+							<url-pattern>*.jsp</url-pattern>
+						</filter-mapping>
+						<filter-mapping>
+							<filter-name>SSO Filter</filter-name>
+							<url-pattern>*.flow</url-pattern>
+						</filter-mapping>
+						<filter-mapping>
+							<filter-name>SSO Filter</filter-name>
+							<url-pattern>*.flowx</url-pattern>
+						</filter-mapping>
+						<filter-mapping>
+							<filter-name>SSO Filter</filter-name>
+							<url-pattern>*.html</url-pattern>
+						</filter-mapping>
+						<filter-mapping>
+							<filter-name>SSO Filter</filter-name>
+							<url-pattern>*.ajax</url-pattern>
+						</filter-mapping>
+						<filter-mapping>
+							<filter-name>SSO Filter</filter-name>
+							<url-pattern>*.ext</url-pattern>
+						</filter-mapping>
+						<filter-mapping>
+							<filter-name>SSO Filter</filter-name>
+							<url-pattern>*.action</url-pattern>
+						</filter-mapping>
+						<filter-mapping>
+							<filter-name>SSO Filter</filter-name>
+							<url-pattern>*.beanx</url-pattern>
+						</filter-mapping>						
+						-->
+		    			<servlet>
+							<servlet-name>MessageBrokerServlet</servlet-name>
+					        	<servlet-class>flex.messaging.MessageBrokerServlet</servlet-class>
+					        	<init-param>
+					            		<param-name>services.configuration.file</param-name>
+					            		<param-value>/WEB-INF/flex/services-config.xml</param-value>
+					        	</init-param>
+					        	<load-on-startup>1</load-on-startup>
+						</servlet>
+						<servlet-mapping>
+							<servlet-name>MessageBrokerServlet</servlet-name>
+							<url-pattern>/messagebroker/*</url-pattern>
+						</servlet-mapping>
+			    	]]> 
+			    </parameter>
+    	    </action>
+    	</then>
+	</if>
+	
+	<!-- 部署Mobile部分，修改配置文件 -->
+	<if>
+    	<equals arg1="${IS_DEPLOY_MOBILE}" arg2="true"/>
+    	<then>				    
+  	   		<echo message="config web.xml for mobile"/>
+    	    <action name="config mobile" classname="com.primeton.install.ext.action.InsertXMLNode">
+				<parameter name="FILE_PATH" value="${__WAR_DIR}/WEB-INF/web.xml"/>
+				<parameter name="XPATH" value="//web-app/filter"/>
+				<parameter name="XML_STRING">
+			    	<![CDATA[
+		    			<filter>
+							<filter-name>mobile</filter-name>
+							<filter-class>com.primeton.emp.client.MobileFilter</filter-class>
+						</filter>
+						<filter-mapping>
+							<filter-name>mobile</filter-name>
+							<url-pattern>/mobile/*</url-pattern>
+						</filter-mapping>
+			    	]]> 
+			    </parameter>
+    	    </action>
+    	</then>
+	</if>
+	
+    <!-- 更新license -->
+	<echo message="......put license file to default.war"/>
+	<copyfile src="${INSTALL_ROOT}/installer/license/primetonlicense.xml" dest="${__WAR_DIR}/WEB-INF/_srv/primetonlicense.xml" overwrite="true"/>
+    
+    <!-- 更新version -->
+	<echo message="......put version to default.war"/>
+	<copyfile src="${INSTALL_ROOT}/resources/base_comps/version.properties" dest="${__WAR_DIR}/WEB-INF/_srv/version/version.properties" overwrite="true"/>
+	
+</deploy>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>
+	<if>
+    	<equals arg1="${IS_DEPLOY_WORKSPACE}" arg2="true"/>
+    	<then>
+			<echo message="...... create appconfig for workspace"/>
+			<action name="add appconfig" classname="com.primeton.installer.platform.action.UpdateAppcfgDir">
+				<parameter name="EXTERNAL_CONFIG_DIR" value="${INSTALL_DIR}/apps_config"/>
+				<parameter name="APP_NAME" value="workspace"/>
+				<parameter name="IP" value="${USER_IP}"/>
+				<parameter name="PORT" value="6399"/>
+			</action>
+		
+			<delete dir="${TEMP_DIR}/workspace.ear"/>
+			
+			<echo message="......unzip ${INSTALL_ROOT}/resources/base_comps/product/server/eos-default.war to ${TEMP_DIR}/workspace.ear/workspace.war"/>
+			<unzip src="${INSTALL_ROOT}/resources/base_comps/product/server/eos-default.war" dest="${TEMP_DIR}/workspace.ear/workspace.war" scale="12"/>
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="Tomcat"/>
+				<then>
+					<echo message="......unzip war to ${TEMP_DIR}/workspace.ear/workspace.war"/>
+					<unzip src="${INSTALL_ROOT}/resources/as_comps/tomcat/eos-default.war" dest="${TEMP_DIR}/workspace.ear/workspace.war" scale="1"/>
+				</then>
+				<else>
+					<echo message="......unzip ear to ${TEMP_DIR}/workspace.ear"/>
+					<unzip src="${INSTALL_ROOT}/resources/as_comps/${APP_SERVER_NAME_LOWERCASE}/eos-default.ear" dest="${TEMP_DIR}/workspace.ear" scale="1"/>
+					<unzip src="${TEMP_DIR}/workspace.ear/default.war" dest="${TEMP_DIR}/workspace.ear/workspace.war" scale="1"/>
+				    <delete file="${TEMP_DIR}/workspace.ear/default.war"/>
+				    
+				    <move file="${TEMP_DIR}/workspace.ear/eos-server-access-ejb.jar" tofile="${TEMP_DIR}/workspace.ear/workspace.war/WEB-INF/lib/eos-server-access-ejb-${eos.version}.jar"/>
+					<action name="remove ejb module" classname="com.primeton.install.ext.action.RemoveXMLNodeValue">
+		    	    	<parameter name="FILE_PATH" value="${TEMP_DIR}/workspace.ear/META-INF/application.xml"/>
+		    	    	<parameter name="XPATH" value="//module[@id='DefaultEjbModule']"/>
+		    	    </action>
+					<echo message ="......replace ${DEFAULT_APP_NAME}.ear/META-INF appName"/>
+					<!-- 修改META-INF目录下文件中的应用名称 -->
+					<action name="replace META-INF appName" classname="com.primeton.install.ext.action.ReplaceToken">
+						<parameter name="TARGET_PATH" value="${TEMP_DIR}/workspace.ear/META-INF"/>
+						<parameter name="REPLACE_TOKEN" value="@eosapp_name@"/>
+						<parameter name="NEW_VALUE" value="workspace"/>
+					</action>
+				</else>
+			</if>
+			<unzip src="${INSTALL_ROOT}/resources/base_comps/product/workspace/bps-workspace.war" dest="${TEMP_DIR}/workspace.ear/workspace.war" scale="35"/>
+			
+			<!-- 更新license -->
+			<echo message="......put license file to workspace.war"/>
+			<copyfile src="${INSTALL_ROOT}/installer/license/primetonlicense.xml" dest="${TEMP_DIR}/workspace.ear/workspace.war/WEB-INF/_srv/primetonlicense.xml" overwrite="true"/>
+		   	
+		    <!-- 更新version -->
+			<echo message="......put version to to workspace.war"/>
+			<copyfile src="${INSTALL_ROOT}/resources/base_comps/version.properties" dest="${TEMP_DIR}/workspace.ear/workspace.war/WEB-INF/_srv/version/version.properties" overwrite="true"/>
+			
+			<if>
+				<equals arg1="${IS_DEPLOY_DEFAULTAPP}" arg2="true"/>
+				<then>
+					<echo message="...... update uddi address in workspace/WEB-INF/classes/uddi-address.xml"/>
+					<action name="update uddi address" classname="com.primeton.installer.platform.action.UpdateUddiAddress">
+						<parameter name="UDDI_FILE_PATH" value="${TEMP_DIR}/workspace.ear/workspace.war/WEB-INF/classes/uddi-address.xml"/>
+						<parameter name="ADDRESS_DESCRIPTION" value="uddi-config.xml at &quot; Work Space&quot;"/>
+						<parameter name="IS_WORKSPACE" value="true"/>
+					</action>
+				</then>
+			</if>
+			
+			<echo message="...... update password of sysadmin in workspace/WEB-INF/workspace.xml"/>
+			<action name="update sysadmin and password" classname="com.primeton.installer.platform.action.UpdateWorkspaceInfoAction">
+				<parameter name="WORKSPACE_XML_PATH" value="${TEMP_DIR}/workspace.ear/workspace.war/WEB-INF/workspace.xml"/>
+				<parameter name="PASSWORD" value="${WORKSPACE_SYSADMIN_PWD}"/>
+			</action>
+			
+			<!-- 对JDK1.8 ecj.jar处理 -->
+			  <if>
+		          <equals arg1="${JAVA_VERSION}" arg2="1.8" function="startsWith"/>
+		        <then>
+			       <delete file="${TEMP_DIR}/workspace.ear/workspace.war/WEB-INF/lib/jdt-3.1.jar"/>
+				   <copyfile src="${INSTALL_ROOT}/resources/base_comps/product/server/ecj_jdk8/ecj-4.2.1.jar" dest="${TEMP_DIR}/workspace.ear/workspace.war/WEB-INF/lib/ecj-4.2.1.jar" overwrite="true"/>
+		        </then>
+             </if>
+			 
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="Tomcat"/>
+				<then>
+				   	<!-- 部署应用到Tomcat -->
+					<echo message="...... deploy workspace to ${APP_SERVER_NAME}"/>
+		    		<action name="deploy war:workspace" classname="com.primeton.install.ext.action.DeployTomcatWar" scale="60">
+						<parameter name="WAR_PATH" value="${TEMP_DIR}/workspace.ear/workspace.war"/>
+						<parameter name="TOMCAT_HOME" value="${AS_TOMCAT_HOME}"/>
+					</action>	
+				</then>
+			</if>
+			
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="JBoss"/>
+				<then>					
+					<action name="deploy ear:workspace" classname="com.primeton.install.ext.action.DeployJBossEar" scale="60">
+						<parameter name="EAR_PATH" value="${TEMP_DIR}/workspace.ear"/>
+						<parameter name="JBOSS_HOME" value="${AS_JBOSS_HOME}"/>
+						<parameter name="SERVER_NAME" value="default"/>
+					</action>
+					<action name="JBoss610Action" classname="com.primeton.install.ext.action.RunDeployAction">
+						<parameter name="DEPLOY_XML_FILE" value="${INSTALL_ROOT}/resources/as_comps/jboss/${APP_SERVER_VERSION}/deploy.xml" />
+						<parameter name="__WAR_DIR" value="${AS_JBOSS_HOME}/server/default/deploy/workspace.ear/workspace.war"/>
+					</action>		
+				</then>
+			</if>
+			
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="WebLogic"/>
+				<then>		   		   
+				   	<echo message="move ear to weblogic domain"/>
+					<mkdir dir="${AS_WL_DOMAIN_HOME}/applications"/>
+					<move file="${TEMP_DIR}/workspace.ear" tofile="${AS_WL_DOMAIN_HOME}/applications/workspace.ear"/>
+				   	 <if>
+						<equals arg1="${APP_SERVER_VERSION}" arg2="12.2.1.0"/>
+		    			<then>
+							<action name="JBoss610Action" classname="com.primeton.install.ext.action.RunDeployAction">
+								<parameter name="DEPLOY_XML_FILE" value="${INSTALL_ROOT}/resources/as_comps/weblogic/12.2.1.0/deploy.xml"/>
+								<parameter name="__WAR_DIR" value="${AS_WL_DOMAIN_HOME}/applications/workspace.ear/workspace.war"/>
+							</action>
+						</then>
+					</if>
+					<echo message="publish workspace to weblogic"/>
+					<action name="deploy ear:workspace" classname="com.primeton.install.ext.action.DeployWebLogicEar" scale="65">
+						<parameter name="BEA_HOME" value="${AS_WL_BEA_HOME}"/>
+						<parameter name="WEBLOGIC_HOME" value="${AS_WL_HOME}"/>
+						<parameter name="DOMAIN_HOME" value="${AS_WL_DOMAIN_HOME}"/>
+						<parameter name="LOGIN_NAME" value="${AS_WL_USERNAME}"/>
+						<parameter name="PASSWORD" value="${AS_WL_PASSWORD}"/>
+						<parameter name="IP" value="${USER_IP}"/>
+						<parameter name="PORT" value="${AS_WL_WEBSVR_PORT}"/>
+						<parameter name="EAR_PATH" value="${AS_WL_DOMAIN_HOME}/applications/workspace.ear"/>
+						<parameter name="TARGET_SERVER" value="${AS_WL_TARGET_SERVER}"/>
+					</action>
+					
+				</then>
+			</if>
+			
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="WebSphere"/>
+				<then>
+				   	<setvalue key="EARWAR_PATH" value="${INSTALL_ROOT}/resources/as_comps/websphere/default_websphere.ear"/>
+				    <if>
+				    	<equals arg1="${IS_CLUSTER}" arg2="true" />
+				    	<then/>
+						<else>					
+							<zip destfile="${TEMP_DIR}/workspace.ear/workspace.zip" basedir="${TEMP_DIR}/workspace.ear/workspace.war"/>		
+							<delete dir="${TEMP_DIR}/workspace.ear/workspace.war"/>		
+							<move file="${TEMP_DIR}/workspace.ear/workspace.zip" tofile="${TEMP_DIR}/workspace.ear/workspace.war"/>		
+							<zip destfile="${TEMP_DIR}/workspace.zip" basedir="${TEMP_DIR}/workspace.ear"/>		
+			                <delete dir="${TEMP_DIR}/workspace.ear"/>
+							<move file="${TEMP_DIR}/workspace.zip" tofile="${TEMP_DIR}/workspace.ear"/>
+		
+							<action name="deploy ear:workspace" classname="com.primeton.install.ext.action.DeployWASEar" scale="65">
+								<parameter name="EXTERNAL_CONFIG_DIR" value="${INSTALL_DIR}/apps_config"/>
+								<parameter name="APP_NAME" value="workspace"/>
+								<parameter name="EAR_PATH" value="${TEMP_DIR}/workspace.ear"/>
+								<parameter name="IS_DEPLOY_EJB" value="false"/>
+								<parameter name="IS_CREATE_JMS" value="false"/>
+							</action>
+				    	</else>
+					</if>
+				</then>
+			</if>
+			
+			<!-- 对PAS应用服务器的处理 -->
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="PAS"/>
+				<then>							
+					<!-- 部署应用到PAS -->
+					<echo message="...... deploy workspace to ${APP_SERVER_NAME}"/>
+					<action name="deploy ear:workspace" classname="com.primeton.installer.platform.pas.PASDeployWar">
+						<parameter name="AS_PAS_HOME" value="${AS_PAS_HOME}"/>
+						<parameter name="DEPLOY_WAR_PATH" value="${TEMP_DIR}/workspace.ear"/>
+					</action>
+				</then>
+			</if>
+			
+			<!-- 对TongWeb应用服务器的处理 -->
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="TongWeb"/>
+				<then>
+					<echo message="...... deploy workspace to ${APP_SERVER_NAME}"/>
+		    		<action name="deploy war:workspace" classname="com.primeton.install.ext.action.DeployTongWebEar" scale="60">
+						<parameter name="EAR_PATH" value="${TEMP_DIR}/workspace.ear"/>
+						<parameter name="TONGWEB_HOME" value="${AS_TONGWEB_HOME}"/>
+						<parameter name="SERVER_NAME" value="default"/>
+					</action>	
+				</then>
+			</if>
+			
+			<!-- 清理临时目录 -->
+			<echo message="clean the temp directory..."/>
+			<delete dir="${TEMP_DIR}/workspace.ear"/>
+		</then>
+	</if>
+</deploy>

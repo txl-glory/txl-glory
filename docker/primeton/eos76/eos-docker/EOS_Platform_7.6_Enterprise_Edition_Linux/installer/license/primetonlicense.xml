@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<licenses>
+    <license-group embed="true" format="1.0" productFamily="Primeton Platform" release="7.6">
+        <license edition="EE" licensee="Primeton Customer" sign="158f694f3eb4274c30ea719b90bb8b0943f69054dedad30805cda47975a60bc40a99c8dd29b09d32a7ca90c9f09553b1147b09f4d51d1adda69f917475875075866c28796375350a8ece05a6600b7172ed44bd34bea6db2afc25df62f91f64806686ae6b686a5518b61dd266898be6ec71f4618ee6f511bb04ef7eb85fea6b47" type="PERM">
+            <license-element key="cpus" privilege="false" value="unlimited"/>
+            <license-element key="db" value="unlimited"/>
+            <license-element key="as" value="unlimited"/>
+            <license-element key="os" value="unlimited"/>
+            <license-element key="expiration" value="unlimited"/>
+            <license-element key="ip" value="jp9cOWhCR4EudFOmRPtnOhXrIG0Ee0nLoQ=="/>
+            <license-element key="mac" value="jp9cOWhCR4EudFOmRPtnOhXrIG0Ee0nLoQ=="/>
+            <license-element key="server" value="true">
+            </license-element>
+            <license-element key="richweb" value="true">
+            </license-element>
+            <license-element key="workflow" value="true">
+            </license-element>
+            <license-element key="managermodel" value="group"/>
+            <license-element key="cluster" value="true"/>
+            <license-element key="international" value="unlimited"/>
+            <license-element key="concurrency" value="5"/>
+            <license-element key="distributed" value="true"/>
+            <license-element key="scaAssembly" value="true"/>
+            <license-element key="scaCaller" value="true"/>
+            <license-element key="wsBinding" value="true"/>
+            <license-element key="wsCaller" value="true"/>
+            <license-element dynamic="true" key="ProcessComposer" value="true"/>
+            <license-element dynamic="true" key="SegmentDeployment" value="false"/>
+            <license-element dynamic="true" key="BFSProcessForm" value="false"/>
+            <license-element dynamic="true" key="ProcessStatistics" value="false"/>
+            <license-element dynamic="true" key="Multitenancy" value="false"/>
+            <license-element dynamic="true" key="portal" value="false"/>
+            <license-element dynamic="true" key="portal_portlet" value="false"/>
+        </license>
+    </license-group>
+</licenses>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>
+	<!--
+	 | 1. 删除jar,增加jar
+	 | 
+	 -->
+
+	<echo message="^_^_^_^_^_^_^_^_^_^_^_^: ${__WAR_DIR}"/>	
+	
+	<copyfile src="${INSTALL_ROOT}/resources/as_comps/weblogic/${APP_SERVER_VERSION}/httpcore-4.3.3.jar" dest="${__WAR_DIR}/WEB-INF/lib/httpcore-4.3.3.jar" overwrite="true"/>
+	<delete file="${__WAR_DIR}/WEB-INF/lib/jdt-3.1.jar"/>
+	<delete file="${__WAR_DIR}/WEB-INF/lib/stax-api-1.0.1.jar"/>
+	<copyfile src="${INSTALL_ROOT}/resources/base_comps/product/server/ecj_jdk8/ecj-4.2.1.jar" dest="${__WAR_DIR}/WEB-INF/lib/ecj-4.2.1.jar" overwrite="true"/>
+</deploy>

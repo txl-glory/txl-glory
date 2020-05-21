@@ -1,0 +1,1 @@
+set CLASSPATH=%1;%CLASSPATH%

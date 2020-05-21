@@ -1,0 +1,14 @@
+<steps>
+    <stepitem id="introduction" namekey="STEP.INTRODUCTION" stepid="02"/>
+	<stepitem id="license-agreement" namekey="STEP.LICENSE" stepid="03"/>
+	<stepitem id="install-dir" namekey="STEP.INSTALLPATH" stepid="04"/>
+	<stepitem id="setup-appserver" namekey="STEP.APPSVR" stepid="05"/>
+	<stepitem id="options" namekey="STEP.OPTIONS" stepid="06"/>
+	<stepitem id="admin-info" namekey="STEP.ADMININFO" stepid="07"/>
+	<stepitem id="choose-ip" namekey="STEP.CHOOSEIP" stepid="08"/>
+	<stepitem id="install-app" namekey="STEP.APPLICATION.CREATE" stepid="09"/>
+	<stepitem id="config-ds" namekey="STEP.DBCONFIG" stepid="10"/>
+	<stepitem id="digest-info" namekey="STEP.DIGEST" stepid="11"/>
+	<stepitem id="installing" namekey="STEP.INSTALLING" stepid="12"/>
+	<stepitem id="finished" namekey="STEP.INSTALLCOMPLETE" stepid="13"/>
+</steps>

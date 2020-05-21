@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<module id="platform" nameKey="Platform Option" descKey="OPTION.PLATFORM" displaySeq="2" required="false" selected="true">
+	<component id="ejb" nameKey="EJB" descKey="OPTION.EJB_DESC" size="0" required="false" selected="false"/>	
+	<component id="coframe" nameKey="COFRAME" descKey="OPTION.COFRAME_DESC" size="6" required="false" selected="true"/>
+	<component id="bps" nameKey="BPS" descKey="OPTION.BPS_DESC" size="60" required="false" selected="true"/>	
+	<!--
+	<component id="cap" nameKey="CAP" descKey="OPTION.CAP_DESC" size="34" required="false" selected="false"/>
+	  
+	<component id="mobile" nameKey="Mobile" descKey="OPTION.MOBILE_DESC" size="40" filesPath="mobile" required="false" selected="false"/>
+	-->
+	<component id="sso" nameKey="SSO" descKey="OPTION.SSO_SUITE" filesPath="sso" required="false" size="78" selected="false" />
+</module>

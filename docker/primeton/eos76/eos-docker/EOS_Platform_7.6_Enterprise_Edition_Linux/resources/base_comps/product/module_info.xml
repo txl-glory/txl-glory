@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<module id="product" nameKey="Product">
+	<component id="server" nameKey="Server" filesPath="server"/>
+	<component id="governor" nameKey="Governor" filesPath="governor"/>
+	<component id="workspace" nameKey="Workspace" filesPath="workspace"/>
+</module>

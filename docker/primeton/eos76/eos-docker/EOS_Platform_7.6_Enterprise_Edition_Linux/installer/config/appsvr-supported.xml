@@ -1,0 +1,28 @@
+<servers>
+	<server name="Tomcat" version="5.5.20" clusterDeploy="false" editorPanel="com.primeton.install.ext.gui.as.TomcatEditorPanel"/>
+	<server name="Tomcat" version="6.0.18" clusterDeploy="false" editorPanel="com.primeton.install.ext.gui.as.TomcatEditorPanel"/>
+	<server name="Tomcat" version="6.0.41" clusterDeploy="false" editorPanel="com.primeton.install.ext.gui.as.TomcatEditorPanel"/>
+	<server name="Tomcat" version="7.0.54" clusterDeploy="false" editorPanel="com.primeton.install.ext.gui.as.TomcatEditorPanel"/>
+	<server name="Tomcat" version="8.5.5" clusterDeploy="false" editorPanel="com.primeton.install.ext.gui.as.TomcatEditorPanel"/>
+	
+	<server name="JBoss" version="4.0.5GA" clusterDeploy="false" editorPanel="com.primeton.install.ext.gui.as.JBossEditorPanel"/>
+	<server name="JBoss" version="6.1.0" clusterDeploy="false" editorPanel="com.primeton.install.ext.gui.as.JBossEditorPanel"/>
+	
+	<server name="WebLogic" version="9.2" clusterDeploy="true" editorPanel="com.primeton.install.ext.gui.as.WLEditorPanel"
+		clusterEditorPanel="com.primeton.install.ext.gui.as.ClusterWLEditorPanel"/>
+	<server name="WebLogic" version="10.0" clusterDeploy="true" editorPanel="com.primeton.install.ext.gui.as.WLEditorPanel"
+		clusterEditorPanel="com.primeton.install.ext.gui.as.ClusterWLEditorPanel"/>
+	<server name="WebLogic" version="10.3" clusterDeploy="true" editorPanel="com.primeton.install.ext.gui.as.WLEditorPanel"
+		clusterEditorPanel="com.primeton.install.ext.gui.as.ClusterWLEditorPanel"/>
+	<server name="WebLogic" version="10.3.5" clusterDeploy="false" editorPanel="com.primeton.install.ext.gui.as.WLEditorPanel"/>
+	<server name="WebLogic" version="12.2.1.0" clusterDeploy="true" editorPanel="com.primeton.install.ext.gui.as.WLEditorPanel"
+	    clusterEditorPanel="com.primeton.install.ext.gui.as.ClusterWLEditorPanel"/>
+	
+	<server name="WebSphere" version="6.1" clusterDeploy="true" editorPanel="com.primeton.install.ext.gui.as.WASEditorPanel"
+		clusterEditorPanel="com.primeton.install.ext.gui.as.WASClusterEditorPanel"/>
+	<server name="WebSphere" version="7.0" clusterDeploy="true" editorPanel="com.primeton.install.ext.gui.as.WASEditorPanel"
+		clusterEditorPanel="com.primeton.install.ext.gui.as.WASClusterEditorPanel"/>
+	<server name="WebSphere" version="8.5" clusterDeploy="false" editorPanel="com.primeton.install.ext.gui.as.WASEditorPanel"/>
+	
+	<server name="TongWeb" version="5.0" clusterDeploy="false" editorPanel="com.primeton.install.ext.gui.as.TongWebEditorPanel"/>
+</servers>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy>
+	<if>
+		<equals arg1="${IS_DEPLOY_SSO}" arg2="true"/>
+		<then>	
+			<delete dir="${TEMP_DIR}/sso-server.ear/sso-server.war"/>
+			<unzip src="${INSTALL_ROOT}/resources/option_comps/product/sso/sso-server.war" dest="${TEMP_DIR}/sso-server.ear/sso-server.war"/>
+			<action name="set sso dataSource driver" classname="com.primeton.install.ext.action.SetXMLNodeValue">
+		    	<parameter name="FILE_PATH" value="${TEMP_DIR}/sso-server.ear/sso-server.war/WEB-INF/deployerConfigContext.xml"/>
+		    	<parameter name="XPATH" value="/beans/bean[@id='dataSource']/property[@name='driverClassName']/value"/>
+		    	<parameter name="NODE_VALUE" value="${DB_DRIVER}"/>
+		    </action>
+			<action name="set sso dataSource url" classname="com.primeton.install.ext.action.SetXMLNodeValue">
+		    	<parameter name="FILE_PATH" value="${TEMP_DIR}/sso-server.ear/sso-server.war/WEB-INF/deployerConfigContext.xml"/>
+		    	<parameter name="XPATH" value="/beans/bean[@id='dataSource']/property[@name='url']/value"/>
+		    	<parameter name="NODE_VALUE" value="${DB_URL}"/>
+		    </action>
+			<action name="set sso dataSource user" classname="com.primeton.install.ext.action.SetXMLNodeValue">
+		    	<parameter name="FILE_PATH" value="${TEMP_DIR}/sso-server.ear/sso-server.war/WEB-INF/deployerConfigContext.xml"/>
+		    	<parameter name="XPATH" value="/beans/bean[@id='dataSource']/property[@name='username']/value"/>
+		    	<parameter name="NODE_VALUE" value="${DB_USERNAME}"/>
+		    </action>
+			<action name="set sso dataSource passwd" classname="com.primeton.install.ext.action.SetXMLNodeValue">
+		    	<parameter name="FILE_PATH" value="${TEMP_DIR}/sso-server.ear/sso-server.war/WEB-INF/deployerConfigContext.xml"/>
+		    	<parameter name="XPATH" value="/beans/bean[@id='dataSource']/property[@name='password']/value"/>
+		    	<parameter name="NODE_VALUE" value="${DB_PASSWORD}"/>
+		    </action>
+		  	    
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="Tomcat"/>
+				<then>
+					<!-- 部署应用到Tomcat -->
+					<echo message="......deploy sso-server.war to tomcat"/>
+					<action name="deploy war:sso-server" classname="com.primeton.install.ext.action.DeployTomcatWar" scale="1">
+						<parameter name="WAR_PATH" value="${TEMP_DIR}/sso-server.ear/sso-server.war"/>
+						<parameter name="TOMCAT_HOME" value="${AS_TOMCAT_HOME}"/>
+					</action>
+				</then>
+			</if>
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="JBoss"/>
+				<then>
+					<echo message="...... deploy sso-server to ${APP_SERVER_NAME}"/>
+					<action name="deploy war:sso-server" classname="com.primeton.install.ext.action.DeployJBossEar" scale="1">
+						<parameter name="EAR_PATH" value="${TEMP_DIR}/sso-server.ear/sso-server.war"/>
+						<parameter name="JBOSS_HOME" value="${AS_JBOSS_HOME}"/>
+						<parameter name="SERVER_NAME" value="default"/>
+					</action>
+		    	    <if>
+						<equals arg1="${APP_SERVER_VERSION}" arg2="6.1.0"/>
+		    			<then>
+							<delete file="${AS_JBOSS_HOME}/server/default/deploy/sso-server.war/WEB-INF/lib/xmldsig-1.0.jar"/>
+							
+							<unzip src="${AS_JBOSS_HOME}/server/default/deploy/sso-server.war/WEB-INF/lib/cas-server-core-3.1.1.jar" 
+								  dest="${AS_JBOSS_HOME}/server/default/deploy/sso-server.war/WEB-INF/lib/cas-server-core-3.1.1"/>
+							<delete file="${AS_JBOSS_HOME}/server/default/deploy/sso-server.war/WEB-INF/lib/cas-server-core-3.1.1/META-INF/persistence.xml"/>
+							<zip basedir="${AS_JBOSS_HOME}/server/default/deploy/sso-server.war/WEB-INF/lib/cas-server-core-3.1.1" 
+							  	destfile="${AS_JBOSS_HOME}/server/default/deploy/sso-server.war/WEB-INF/lib/cas-server-core-3.1.1.jar"/>
+							<delete dir="${AS_JBOSS_HOME}/server/default/deploy/sso-server.war/WEB-INF/lib/cas-server-core-3.1.1"/>
+						</then>
+					</if>
+				</then>
+			</if>
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="WebLogic"/>
+				<then>
+					<move file="${TEMP_DIR}/sso-server.ear/sso-server.war" tofile="${AS_WL_DOMAIN_HOME}/applications/sso-server.war"/>
+				
+					<echo message="...... deploy sso to ${APP_SERVER_NAME}"/>
+					<action name="deploy war:sso-server" classname="com.primeton.install.ext.action.DeployWebLogicEar" scale="3">
+						<parameter name="BEA_HOME" value="${AS_WL_BEA_HOME}"/>
+						<parameter name="WEBLOGIC_HOME" value="${AS_WL_HOME}"/>
+						<parameter name="DOMAIN_HOME" value="${AS_WL_DOMAIN_HOME}"/>
+						<parameter name="LOGIN_NAME" value="${AS_WL_USERNAME}"/>
+						<parameter name="PASSWORD" value="${AS_WL_PASSWORD}"/>
+						<parameter name="IP" value="${USER_IP}"/>
+						<parameter name="PORT" value="${AS_WL_WEBSVR_PORT}"/>
+						<parameter name="EAR_PATH" value="${AS_WL_DOMAIN_HOME}/applications/sso-server.war"/>
+						<parameter name="TARGET_SERVER" value="${AS_WL_TARGET_SERVER}"/>
+					</action>
+				</then>
+			</if>
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="WebSphere"/>
+				<then>
+					<if>
+						<equals arg1="${IS_CLUSTER}" arg2="true" />
+						<then/>
+						<else>
+							<zip destfile="${TEMP_DIR}/sso-server.war"
+								basedir="${TEMP_DIR}/sso-server.ear/sso-server.war"/>
+		
+							<action name="deploy war:sso-server" classname="com.primeton.install.ext.action.DeployWASEar" scale="3">
+								<parameter name="EXTERNAL_CONFIG_DIR" value="${INSTALL_DIR}/apps_config"/>
+								<parameter name="APP_NAME" value="sso-server"/>
+								<parameter name="EAR_PATH" value="${TEMP_DIR}/sso-server.war"/>
+								<parameter name="IS_DEPLOY_EJB" value="false"/>
+								<parameter name="IS_CREATE_JMS" value="false"/>
+							</action>
+							<delete file="${TEMP_DIR}/sso-server.war"/>
+						</else>
+					</if>
+				</then>
+			</if>
+			
+			<!-- 对PAS应用服务器的处理 -->
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="PAS"/>
+				<then>					
+					<!-- 部署应用到PAS -->
+					<echo message="...... deploy sso-server to ${APP_SERVER_NAME}"/>
+					<action name="deploy war:sso-server" classname="com.primeton.installer.platform.pas.PASDeployWar">
+						<parameter name="AS_PAS_HOME" value="${AS_PAS_HOME}"/>
+						<parameter name="DEPLOY_WAR_PATH" value="${TEMP_DIR}/sso-server.ear/sso-server.war"/>
+						<parameter name="DEPLOY_PLAN_PATH" value="${INSTALL_ROOT}/resources/as_comps/pas/plan-sso-server.xml"/>
+					</action>
+				</then>
+			</if>
+			
+			<!-- 对TongWeb应用服务器的处理 -->
+			<if>
+				<equals arg1="${APP_SERVER_NAME}" arg2="TongWeb"/>
+				<then>					
+					<!-- 部署应用到TongWeb -->
+					<echo message="...... deploy sso-server to ${APP_SERVER_NAME}"/>
+					<action name="deploy war:sso-server" classname="com.primeton.install.ext.action.DeployTongWebEar">
+						<parameter name="EAR_PATH" value="${TEMP_DIR}/sso-server.ear/sso-server.war"/>
+						<parameter name="TONGWEB_HOME" value="${AS_TONGWEB_HOME}"/>
+						<parameter name="SERVER_NAME" value="default"/>
+					</action>
+				</then>
+			</if>
+			
+			<delete dir="${TEMP_DIR}/sso-server.ear"/>
+		</then>
+	</if>
+</deploy>

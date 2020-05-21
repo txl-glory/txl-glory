@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>	
+	<loadproperties srcfile="productinfo.properties"/>
+	<variable name="EDITION" value="PE"/>
+	<variable name="RUNNER_TYPE" value="install"/>	
+	<!-- 安装此产品需要的空间，以MB为单位 -->
+	<variable name="DISK_NEEDED" value="1000"/>
+	
+	<!-- 在这里给用户ip初始为127.0.0.1，以免在集群环境下，未配置用户ip，导致ip为空的问题 -->
+	<variable name="USER_IP" value="127.0.0.1"/>	
+	<!-- 处理用户端口的问题 -->
+	<variable name="USER_PORT" value="6200"/>
+
+	<renderer classname="com.primeton.install.ext.gui.StepListRenderer"/>
+
+	<steps firststep="01">
+		<step id="01" desc="Install Initialize">
+			<echo message="start install ${product.name} ${product.version} ............"/>
+			<if>
+				<equals arg1="${IS_SILENT_INSTALL}" arg2="true"/>
+				<then>
+					<action name="silent installing init" classname="com.primeton.installer.platform.action.SilentInit"/>
+				</then>
+			</if>
+			<action name="init install" classname="com.primeton.install.ext.action.InstallerInitialize" desc="Installer Initialize..."/>
+			<echo message="INSTALL_ROOT ............${INSTALL_ROOT}"/>
+			<action name="get temp dir" classname="com.primeton.install.ext.action.GetTempDir" desc="get temprary dir">
+				<parameter name="variable_key" value="TEMP_DIR"/>
+			</action>
+
+			<echo message="tempdir == ${TEMP_DIR}"/>
+			<nextstep default="011"/>
+		</step>
+		<step id="011" desc="Temp Space Check">
+			<action name="check temp space" classname="com.primeton.install.ext.action.CheckDiskSpace" desc="Disk space is enough">
+				<parameter name="DIR" value="${TEMP_DIR}"/>
+				<parameter name="SPACESIZE" value="500"/>
+				<parameter name="VARIABLE_INDEX" value="TEMPSPACE_ENOUGH"/>
+			</action>
+			<nextstep discriminator="${TEMPSPACE_ENOUGH}">
+				<branch id="true" stepid="02"/>
+				<branch id="false" stepid="012"/>
+			</nextstep>
+		</step>
+		<step id="012" desc="TempSpaceChoose">
+			<gui setuppanel="com.primeton.install.ext.gui.TempSpaceChoosePanel" controlpanel="com.primeton.install.ext.gui.ConfirmCancelControlPanel" render="false"/>
+			<nextstep default="011"/>
+		</step>
+		<step id="02" desc="Introduction">
+			<gui setuppanel="com.primeton.install.ext.gui.IntroductionPanel"/>
+		    <nextstep default="03"/>
+		</step>
+		<step id="03" desc="LicenseAgreement">
+			<gui setuppanel="com.primeton.install.ext.gui.LicenseViewPanel" />
+		    <nextstep default="04"/>
+		</step>
+		<step id="04" desc="IntallDir">
+			<gui setuppanel="com.primeton.installer.platform.gui.ChooseInstallDirPanel" />
+		    <nextstep default="05"/>
+		</step>
+		<step id="05" desc="ApplicationServer">
+			<gui setuppanel="com.primeton.installer.platform.gui.AppSvrPanel" />
+		    <nextstep default="06"/>
+		</step>
+		<step id="06" desc="OptionComponents" interceptor="com.primeton.install.ext.event.OptionalComponentsInterceptor">
+			<gui
+				setuppanel="com.primeton.installer.platform.gui.OptionalComponentsPanel" />
+			<nextstep discriminator="${IS_CLUSTER}">
+				<branch id="true" stepid="09"/>
+			</nextstep>
+			<nextstep default="07"/>
+		</step>
+		<step id="07" desc="AdministratorInfo">
+			<gui setuppanel="com.primeton.installer.platform.gui.AdminInfoPanel" />
+		    <nextstep default="08"/>
+		</step>
+		<step id="08" desc="IPPort4Management">
+			<gui setuppanel="com.primeton.install.ext.gui.ChooseIPPanel" />
+		    <nextstep default="09"/>
+		</step>
+		<step id="09" desc="AppsOption">
+			<gui setuppanel="com.primeton.installer.platform.gui.InstallApplicationPEPanel" />
+		    <nextstep default="10"/>
+		</step>
+		<step id="10" desc="ConfigDatasource">
+			<gui setuppanel="com.primeton.install.ext.gui.ConfigDBPanel" />
+		    <nextstep default="11"/>
+		</step>
+		<step id="11" desc="DigestInfo">
+			<gui setuppanel="com.primeton.install.ext.gui.DigestPanel" />
+		    <nextstep default="12"/>
+		</step>
+		<step id="12" desc="Installing" auto="true">
+			<gui setuppanel="com.primeton.install.ext.gui.InstallingPanel" />
+			<actionscall id="install"/>
+		    <nextstep default="13"/>
+		</step>
+		<step id="13" desc="Finished">
+			<gui setuppanel="com.primeton.install.ext.gui.InstallFinishedPanel" />
+		</step>
+	</steps>
+
+	<actions id="install">		
+		<batch batchFile="${INSTALL_ROOT}/installer/config/deploy.xml"/>
+	</actions>
+</project>
