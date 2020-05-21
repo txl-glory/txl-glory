@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+  tomcat:
+    image: primeton/primeton-eos:7.6
+    container_name: primeton-eos76
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - 8080:8080
+    volumes:
+      - ./webapps:/usr/local/tomcat/webapps
