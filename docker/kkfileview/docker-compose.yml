@@ -1,8 +1,10 @@
 version: '3.3'
 services:
-  nginx:
+  kkfileview:
     image: 'keking/kkfileview:v2.2.0'
     container_name: kkfileview-v2.0.0
     restart: always
     ports:
       - 8012:8012
+    volumes:
+      - ./data:/opt/kkFileView-2.2.0
