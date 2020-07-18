@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+  ubuntu-20.04:
+    image: 'ubuntu:20.04'
+    container_name: ubuntu-20.04
+    restart: always
+    ports:
+      - 22:22
+    #volumes:
+    #  - ./data:/home
