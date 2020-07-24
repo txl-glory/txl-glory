@@ -1,6 +1,6 @@
 version: '3.3'
 services:
-  db:
+  mysql-db:
     image: mysql
     container_name: mysql
     restart: always
@@ -11,7 +11,7 @@ services:
       --character-set-server=utf8
       --max_connections=2000
     volumes:
-      - /home/tianxuanling/mysql/data:/var/lib/mysql
+      - ./data:/var/lib/mysql
     ports:
       - 3306:3306
 
