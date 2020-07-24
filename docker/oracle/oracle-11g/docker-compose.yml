@@ -1,16 +1,22 @@
 version: '3.3'
 services:
   oracle-11g:
-    image: jaspeen/oracle-11g
+    image: filemon/oracle_11g
     container_name: oracle-11g
-    restart: always
     privileged: true
-    environment:
-      TZ: 'Asia/Shanghai'
+    restart: always
+  environment:
+    TZ: 'Asia/Shanghai'
+    DBCA_TOTAL_MEMORY: 16192
     ports:
       - 1521:1521
     volumes:
-      - ./install:/install
-      - ./dpdump:/opt/oracle/dpdump
+      - ./data:/u01/app/oracle
 
-# dbuser: SYS/oracle
+# 连接参数如下
+# hostname: localhost
+# port: 31521
+# sid: orcl
+# service name: orcl
+# username: system
+# password: admin
