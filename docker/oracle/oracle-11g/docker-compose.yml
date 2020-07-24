@@ -1,16 +1,16 @@
 version: '3.3'
 services:
   oracle-11g:
-    image: loliconneko/oracle-ee-11g
+    image: jaspeen/oracle-11g
     container_name: oracle-11g
-    privileged: true
     restart: always
+    privileged: true
     environment:
-      ORACLE_SID: "EE"
-      service name: "ORCL"
-      WEB_CONSOLE: false
-      DBCA_TOTAL_MEMORY: "1024"
+      TZ: 'Asia/Shanghai'
     ports:
-      - 15211:1521
+      - 1521:1521
     volumes:
-      - ./data:/u01/app/oracle
+      - ./install:/install
+      - ./dpdump:/opt/oracle/dpdump
+
+# dbuser: SYS/oracle
