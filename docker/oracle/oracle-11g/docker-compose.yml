@@ -5,9 +5,9 @@ services:
     container_name: oracle-11g
     privileged: true
     restart: always
-  environment:
-    TZ: 'Asia/Shanghai'
-    DBCA_TOTAL_MEMORY: 16192
+    environment:
+      TZ: 'Asia/Shanghai'
+      DBCA_TOTAL_MEMORY: 16192
     ports:
       - 1521:1521
     volumes:
@@ -15,8 +15,21 @@ services:
 
 # 连接参数如下
 # hostname: localhost
-# port: 31521
+# port: 1521
 # sid: orcl
 # service name: orcl
-# username: system
+# username: system/sys
 # password: admin
+
+# 密码过期问题处理
+#  SELECT username,PROFILE FROM dba_users;
+#  SELECT * FROM dba_profiles s WHERE s.profile='DEFAULT' AND resource_name='PASSWORD_LIFE_TIME';
+#  ALTER PROFILE DEFAULT LIMIT PASSWORD_LIFE_TIME UNLIMITED;
+#  Select * FROM dba_profiles s Where s.profile='DEFAULT' AND resource_name='PASSWORD_LIFE_TIME';
+
+# SELECT * FROM dba_profiles s WHERE s.profile='DEFAULT' AND resource_name='FAILED_LOGIN_ATTEMPTS';
+#  ALTER PROFILE DEFAULT LIMIT FAILED_LOGIN_ATTEMPTS UNLIMITED;
+#  select * from dba_profiles WHERE dba_profiles.profile='DEFAULT';
+
+#  --修改之后不需要重启动数据库，会立即生效。 如果出现ORA-28000 the account is locked.错误
+#  alter user 用户名 account unlock
