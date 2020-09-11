@@ -3,7 +3,7 @@
 ## 1.中文乱码问题
 在用户界面把文字改为中文后，虽然界面上变成了中文，但是在graph图形页面上有乱码，如下图所示：
 
-![](.\images\luanma.png)
+![](https://github.com/tianxuanling/txl-glory/blob/master/docker/zabbix/images/luanma.png)
 
 解决方法：把本地字体文件复制到容器中去。
 
