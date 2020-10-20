@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+  dameng-dm8:
+    image: wusuopu/dameng:dm8
+    container_name: dameng-dm8
+    restart: always
+    environment:
+      TZ: 'Asia/Shanghai'
+    ports:
+      - 5236:5236
+    volumes:
+      - ./data:/data
