@@ -19,7 +19,7 @@ yum install -y nginx
 /usr/sbin/nginx -s reload
 ```
 
-## 2.nginx.conf 配置文件
+## 2./etc/nginx/nginx.conf 配置文件
 
 ```conf
 #user  nobody;
