@@ -1,6 +1,6 @@
 # centos7 安装 nginx
 
-## nginx 安装过程
+## 1.nginx 安装过程
 
 ```bash
 # 1.添加yum源
@@ -19,7 +19,7 @@ yum install -y nginx
 /usr/sbin/nginx -s reload
 ```
 
-## nginx.conf 配置文件
+## 2.nginx.conf 配置文件
 
 ```conf
 #user  nobody;
