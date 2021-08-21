@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+  kong-dashboard:
+    image: pgbi/kong-dashboard
+    container_name: kong-dashboard
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+    command: start --kong-url http://192.168.0.200:8001 --basic-auth admin=shanhong
+    ports:
+      - 8080:8080

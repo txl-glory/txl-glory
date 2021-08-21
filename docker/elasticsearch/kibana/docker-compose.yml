@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.3
+    container_name: kibana
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      SERVER_NAME: Your SERVER_NAME
+      ELASTICSEARCH_HOSTS: http://192.168.0.200:9200
+      I18N_LOCALE: 'zh-CN'
+    ports:
+      - 5601:5601

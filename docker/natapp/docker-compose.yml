@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  txl-natapp:
+    image: txl/natapp:latest
+    container_name: txl-natapp
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: 'Asia/Shanghai'
+    ports:
+      - 60002:80

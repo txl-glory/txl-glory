@@ -1,72 +1,38 @@
-# ubuntu20.04安装docker和docker-compose
-## 1：更改apt源
-```shell script
-deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
+### 3 分钟了解如何进入开发
 
-deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
+欢迎使用 Codeup，通过阅读以下内容，你可以快速熟悉 Codeup ，并立即开始今天的工作。
 
-deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
+### 提交**文件**
 
-deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
+首先，你需要了解在 Codeup 中如何提交代码文件，跟着文档「[**提交第一行代码**](https://thoughts.aliyun.com/sharespace/5e8c37eb546fd9001aee8242/docs/5e8c37e7546fd9001aee81fd)」一起操作试试看吧。
 
-deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
-```
+### 开启扫描
 
-## 2：安装docker.io和docker-compose
-```shell script
-sudo apt-get update
-sudo apt-get install docker.io docker-compose
-```
+开发过程中，为了更好的管理你的代码资产，Codeup 内置了「[**代码规约扫描**](https://thoughts.aliyun.com/sharespace/5e8c37eb546fd9001aee8242/docs/5e8c37e8546fd9001aee821c)」和「[**敏感信息检测**](https://thoughts.aliyun.com/sharespace/5e8c37eb546fd9001aee8242/docs/5e8c37e8546fd9001aee821b)」服务，你可以在代码库设置-集成与服务中一键开启，开启后提交或合并请求的变更将自动触发扫描，并及时提供结果反馈。
 
-# centos8安装docker-ce和docker-compose
-## 0：背景介绍
-现在centos已经到了8 ，一直在ubuntu环境使用docker.io&docker-compose，客户突然要求使用centos8，尝试安装docker-ce&docker-compose，不料竟然还报了个错（缺少依赖），故及时记录一下，方便其他同学。
+![](https://img.alicdn.com/tfs/TB1nRDatoz1gK0jSZLeXXb9kVXa-1122-380.png)
 
-## 1：安装步骤
-```shell script
-# 1.1下载docker-ce的repo
-curl https://download.docker.com/linux/centos/docker-ce.repo -o /etc/yum.repos.d/docker-ce.repo
+![](https://img.alicdn.com/tfs/TB1PrPatXY7gK0jSZKzXXaikpXa-1122-709.png)
 
-# 1.2安装依赖（这是相比centos7的关键步骤）
-yum install https://download.docker.com/linux/fedora/30/x86_64/stable/Packages/containerd.io-1.2.6-3.3.fc30.x86_64.rpm
+### 代码评审
 
-# 1.3安装docker-ce
-yum install docker-ce
+功能开发完毕后，通常你需要发起「[**代码合并和评审**](https://thoughts.aliyun.com/sharespace/5e8c37eb546fd9001aee8242/docs/5e8c37e8546fd9001aee8216)」，Codeup 支持多人协作的代码评审服务，你可以通过「[**保护分支**](https://thoughts.aliyun.com/sharespace/5e8c37eb546fd9001aee8242/docs/5e8c37e9546fd9001aee8221)」策略及「[**合并请求设置**](https://thoughts.aliyun.com/sharespace/5e8c37eb546fd9001aee8242/docs/5e8c37e9546fd9001aee8224)」对合并过程进行流程化管控，同时提供 WebIDE 在线代码评审及冲突解决能力，让你的评审过程更加流畅。
 
-# 1.4启动docker
-systemctl start docker
+![](https://img.alicdn.com/tfs/TB1XHrctkP2gK0jSZPxXXacQpXa-1432-887.png)
 
-# 1.5开机启动docker
-systemctl enable docker
+![](https://img.alicdn.com/tfs/TB1V3fctoY1gK0jSZFMXXaWcVXa-1432-600.png)
 
-# 1.6安装docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+### 编写文档
 
-# 1.7添加操作权限
-sudo chmod +x /usr/local/bin/docker-compose
+项目推进过程中，你的经验和感悟可以直接记录到 Codeup 代码库的「[**文档**](https://thoughts.aliyun.com/sharespace/5e8c37eb546fd9001aee8242/docs/5e8c37e8546fd9001aee8213)」内，让智慧可视化。
 
-# 1.8设置快捷
-sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+![](https://img.alicdn.com/tfs/TB1BN2ateT2gK0jSZFvXXXnFXXa-1432-700.png)
 
-# 1.9查看docker&docker-compose版本
-docker --version
-docker-compose --version
-```
+### 成员协作
 
-# docker加速
-```shell script
-xxx@xxx:/etc/docker$ cat daemon.json
-{
-        "registry-mirrors" : [
-                "https://rnxly1wc.mirror.aliyuncs.com",
-                "https://docker.mirrors.ustc.edu.cn",
-                "http://hub-mirror.c.163.com",
-                "http://registry.docker-cn.com"
-        ]
-}
-```
+是时候邀请成员一起编写卓越的代码工程了，请点击右上角「成员」邀请你的小伙伴开始协作吧！
+
+### 更多
+
+Git 使用教学、高级功能指引等更多说明，参见[**Codeup 帮助文档**](https://thoughts.aliyun.com/sharespace/5e8c37eb546fd9001aee8242/docs/5e8c37e6546fd9001aee81fa)。
+fbkepkmbfcjzbeic

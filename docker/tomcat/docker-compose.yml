@@ -1,9 +1,10 @@
 version: '3.3'
 services:
-  tomcat:
-    image: tomcat:jdk14-openjdk-oracle
-    container_name: tomcat-jdk14-openjdk-oracle
+  tomcat8-5-66:
+    image: tomcat:8.5.66
+    container_name: tomcat8-5-66
     restart: always
+    network_mode: 'bridge'
     environment:
       TZ: Asia/Shanghai
     ports:

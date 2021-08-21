@@ -4,6 +4,7 @@ services:
     image: idoop/zentao:12.3
     container_name: zentao-server-12.3
     restart: always
+    network_mode: 'bridge'
     environment:
       TZ: "Asia/Shanghai"
       ADMINER_USER: "root"

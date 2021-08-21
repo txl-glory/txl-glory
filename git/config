@@ -1,0 +1,27 @@
+# github配置
+Host github.com
+    HostName github.com
+    User tianxuanling
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa_github
+
+# gitee配置
+Host gitee.com
+    HostName gitee.com
+    User tianxuanling
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa_gitee
+
+# codeup配置
+Host codeup.aliyun.com
+    HostName codeup.aliyun.com
+    User zhaosh
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa_codeup
+
+# yfhx-gitlab配置
+Host yfhx-gitlab
+    HostName 192.168.0.200
+    User zhaosh
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa

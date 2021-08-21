@@ -1,0 +1,14 @@
+version: "3.3"
+services:
+  kettle-scheduler9.1:
+    image: registry.cn-hangzhou.aliyuncs.com/txlhub/txl-glory:kettle-scheduler9.1
+    container_name: kettle-scheduler9.1
+    restart: always
+    network_mode: "bridge"
+    environment:
+      TZ: "Asia/Shanghai"
+    ports:
+      - 60004:60004
+      - 2222:2222
+    volumes:
+      - ./data-integration:/home/kettle/data-integration

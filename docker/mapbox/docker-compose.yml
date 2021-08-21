@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  mapbox:
+    image: registry.cn-hangzhou.aliyuncs.com/txlhub/gis-mapbox:1.0.0
+    container_name: mapbox
+    restart: always
+    network_mode: bridge
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - 8887:8887

@@ -4,6 +4,7 @@ services:
     image: redis
     container_name: redis-master
     restart: always
+    network_mode: 'bridge'
     ports:
       - 6379:6379
 

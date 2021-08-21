@@ -1,0 +1,19 @@
+version: '3.3'
+services:
+  prometheus-v2-27-1:
+    image: prom/prometheus:v2.27.1
+    container_name: prometheus-v2-27-1
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - 9090:9090
+    volumes:
+      - ./data/etc/prometheus:/etc/prometheus
+
+scrape_configs:
+  - job_name: 'yfhx-devops1210'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['192.168.0.200:60006']

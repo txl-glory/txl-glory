@@ -1,0 +1,14 @@
+version: '3.3'
+services:
+  activewish-1.0.0:
+    image: 'txl/activewish:1.0.0'
+    container_name: activewish-1.0.0
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: 'Asia/Shanghai'
+    ports:
+      - 9100:8080
+    volumes:
+      - ./config:/home/activewish/config
+      - ./files:/home/activewish/files

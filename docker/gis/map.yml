@@ -1,0 +1,41 @@
+version: '3.3'
+services:
+  pie-tile-service:
+    image: htht/pie-tile-service:4.0
+    container_name: pie-tile-service
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ./data/map-server/conf/pie-tile-service:/bin/conf
+      - ./data/map-server/data/pie-vector-tile-service:/bin/data
+    ports:
+      - 10000:8083
+  
+  pie-vector-tile-service:
+    image: htht/pie-vector-tile-service:4.0
+    container_name: pie-vector-tile-service
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ./data/map-server/data/pie-vector-tile-service/mbtiles:/app/js/nodejs/pie-map-viewer/data/mbtiles
+      - ./data/map-server/conf/pie-vector-tile-service/public:/app/js/nodejs/pie-map-viewer/public
+      - ./data/map-server/conf/pie-vector-tile-service/styles:/app/js/nodejs/pie-map-viewer/styles
+      - ./data/map-server/conf/pie-vector-tile-service/config.json:/app/js/nodejs/pie-map-viewer/config.json
+    ports:
+      - 10002:8887
+
+  pie-vector-tile-edtior:
+    image: htht/pie-vector-tile-edtior:4.0
+    container_name: pie-vector-tile-edtior
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ./data/map-server/conf/pie-vector-tile-edtior/public:/maputnik/public
+    ports:
+      - 10003:8888

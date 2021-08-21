@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  txl-gitlab-runner:
+    image: txl/gitlab-runner:1.0.0
+    container_name: txl-gitlab-runner
+    restart: always
+    environment:
+      TZ: 'Asia/Shanghai'
+    volumes:
+      - ./gitlab-runner:/etc/gitlab-runner
+      - ./docker.sock:/var/run/docker.sock

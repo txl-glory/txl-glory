@@ -1,9 +1,10 @@
 version: '3.3'
 services:
-  mysql-db:
-    image: mysql
-    container_name: mysql
+  mysql-5-7-34:
+    image: mysql:5.7.34
+    container_name: mysql-5.7.34
     restart: always
+    network_mode: 'bridge'
     environment:
       TZ: Asia/Shanghai
       MYSQL_ROOT_PASSWORD: shanhong
@@ -11,13 +12,7 @@ services:
       --character-set-server=utf8
       --max_connections=2000
     volumes:
-      - ./data:/var/lib/mysql
+      - ./data/var/lib/mysql:/var/lib/mysql
+      - ./data/etc/mysql:/etc/mysql
     ports:
       - 3306:3306
-
-  adminer:
-    image: adminer
-    container_name: adminer
-    restart: always
-    ports:
-      - 8080:8080

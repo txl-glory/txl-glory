@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+  ubuntu-20-04:
+    image: registry.cn-hangzhou.aliyuncs.com/txlhub/ubuntu:20.04
+    container_name: ubuntu-20-04
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      - TZ=Asia/Shanghai
+    command: /bin/bash -c "/etc/init.d/ssh start"
+    ports:
+      - '2290:22'
+# 用户名和密码：root/root

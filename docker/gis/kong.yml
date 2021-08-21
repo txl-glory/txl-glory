@@ -1,0 +1,25 @@
+version: '3.3'
+services:
+  kong:
+    image: kong:latest
+    container_name: kong
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+      KONG_DATABASE: "postgres"
+      KONG_PG_HOST: "192.168.0.200"
+      KONG_PG_PASSWORD: "shanhong"
+      KONG_CASSANDRA_CONTACT_POINTS: "192.168.0.200"
+      KONG_PROXY_ACCESS_LOG: "/dev/stdout"
+      KONG_ADMIN_ACCESS_LOG: "/dev/stdout"
+      KONG_PROXY_ERROR_LOG: "/dev/stderr"
+      KONG_ADMIN_ERROR_LOG: "/dev/stderr"
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001, 0.0.0.0:8444 ssl"
+    volumes:
+      - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
+    ports:
+      - 8000:8000
+      - 8003:8443
+      - 8001:8001
+      - 8444:8444

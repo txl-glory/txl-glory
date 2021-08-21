@@ -1,13 +1,13 @@
-version: '3.3'
+version: "3.3"
 services:
   gitlab:
-    image: 'twang2218/gitlab-ce-zh:11.1.4'
+    image: "twang2218/gitlab-ce-zh:11.1.4"
     container_name: gitlab-ce-11.1.4
     restart: always
     hostname: txl.gitlab.io
-#   privileged: true
+    #   privileged: true
     environment:
-      TZ: 'Asia/Shanghai'
+      TZ: "Asia/Shanghai"
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://txl.gitlab.io:80'
         gitlab_rails['time_zone'] = 'Asia/Shanghai'
@@ -23,9 +23,9 @@ services:
         gitlab_rails['smtp_tls'] = true
         gitlab_rails['gitlab_email_from'] = 'xxxx@163.com'
     ports:
-      - '9001:80'
-      - '8443:443'
-      - '2222:22'
+      - "9001:80"
+      - "8443:443"
+      - "2222:22"
     volumes:
       - ./gitlab/config:/etc/gitlab
       - ./gitlab/data:/var/opt/gitlab

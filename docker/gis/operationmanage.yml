@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+  operationmanage:
+    image: operationmanage:latest
+    container_name: operationmanage
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ./data/operationmanage:/home/operationmanage
+    ports:
+      - 8081:8080

@@ -1,0 +1,16 @@
+version: '3.3'
+services:
+  grafana-8-0-0:
+    image: grafana/grafana:8.0.0
+    container_name: grafana-8-0-0
+    restart: always
+    network_mode: 'bridge'
+    user: '472'
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - 3000:3000
+    volumes:
+      - ./data/var/lib/grafana:/var/lib/grafana
+      - ./data/etc/grafana:/etc/grafana
+      - ./data/var/log/grafana:/var/log/grafana

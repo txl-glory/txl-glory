@@ -1,0 +1,110 @@
+version: '3.3'
+services:
+  #1.消息中间件
+  pie-pusher-gnatsd:
+    image: htht/pie-pusher-gnatsd:4.0
+    container_name: pie-pusher-gnatsd
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+    ports:
+      - 4222:4222
+      - 8222:8222
+
+  #2.ssdb数据库
+  pie-ssdb-service:
+    image: htht/pie-ssdb-service:4.0
+    container_name: pie-ssdb-service
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ./data/push/pie-pusher/conf/pie-ssdb-service/ssdb.conf:/etc/ssdb.conf
+      - ./data/push/pie-pusher/data/pie-ssdb-service/ssdb:/var/lib/ssdb
+      - ./data/push/pie-pusher/data/pie-ssdb-service/pid:/var/pid/ssdb
+    ports:
+      - 8888:8888
+
+  #3.id服务
+  pie-pusher-id:
+    image: htht/pie-id-service:v5.0
+    container_name: pie-pusher-id
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ./data/push/pie-pusher/conf/pie-pusher-id/:/bin/conf
+    ports:
+      - 9999:9999
+
+  #4.conn长连接服务
+  pie-pusher-conn-service:
+    image: htht/pie-pusher-conn-server:v5.0
+    container_name: pie-pusher-conn-service
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ./data/push/pie-pusher/conf/pie-pusher-conn-service:/bin/conf
+    ports:
+      - 9058:9058
+      - 9078:9078
+      - 9088:9088
+    links:
+      - pie-pusher-gnatsd:gnatsd
+
+  #5.service推送服务
+  pie-pusher-service:
+    image: htht/pie-pusher-service:v5.0
+    container_name: pie-pusher-service
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ./data/push/pie-pusher/conf/pie-pusher-service:/bin/conf
+    ports:
+      - 8089:8089
+      - 8099:8099
+    links:
+      - pie-pusher-gnatsd:gnatsd
+      - pie-pusher-id
+
+  #6.core核心存储服务
+  pie-core-storage:
+    image: htht/pie-core-service:v5.0.3
+    container_name: pie-core-storage
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ./data/push/pie-pusher/conf/pie-core-storage/app.conf:/bin/app.conf
+      - ./data/push/pie-pusher/conf/pie-core-storage/logconfig.xml:/bin/logconfig.xml
+    ports:
+      - 8012:8012
+      - 8022:8022
+      - 55001:55001
+      - 55002:55002
+      - 55003:55003
+    links:
+      - pie-ssdb-service
+
+  #7.general通用服务
+  pie-pusher-general:
+    image: htht/pie-general-service:v5.0.2
+    container_name: pie-pusher-general
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ./data/push/pie-pusher/conf/pie-pusher-general:/bin/conf
+    ports:
+      - 8901:8901
+    links:
+      - pie-ssdb-service

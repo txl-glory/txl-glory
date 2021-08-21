@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  springboot-monitor:
+    image: registry.cn-hangzhou.aliyuncs.com/txlhub/springboot-monitor:1.0.0
+    container_name: springboot-monitor-1.0.0
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: 'Asia/Shanghai'
+    ports:
+      - 60000:60000
