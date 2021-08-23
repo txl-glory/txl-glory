@@ -1,6 +1,6 @@
 # 彻底解决 Linux 系统下 systemd-resolve 占用 53 端口的问题
 
-```
+```shell
 ## 查看端口占用情况，看看 53 端口是不是被 systemd-resolved 占用了。
 sudo netstat -nultp
 如果 53 端口确定被 systemd-resolved 占用了，则可以根据下面给出的方法解决。
