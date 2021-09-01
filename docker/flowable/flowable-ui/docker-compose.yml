@@ -1,0 +1,9 @@
+version: "3.3"
+services:
+  flowable-ui670:
+    image: flowable/flowable-ui:6.7.0
+    container_name: flowable-ui670
+    restart: always
+    network_mode: "bridge"
+    ports:
+      - "8080:8080"

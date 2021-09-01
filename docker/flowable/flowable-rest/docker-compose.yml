@@ -1,0 +1,9 @@
+version: "3.3"
+services:
+  flowable-rest670:
+    image: flowable/flowable-rest:6.7.0
+    container_name: flowable-rest670
+    restart: always
+    network_mode: "bridge"
+    ports:
+      - "8080:8080"
