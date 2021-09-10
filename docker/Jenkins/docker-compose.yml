@@ -1,17 +1,17 @@
-version: '3.3'
+version: "3.3"
 services:
-  jenkins:2.249.3-lts-centos7:
-    image: jenkins/jenkins:2.249.3-lts-centos7
-    container_name: jenkins:2.249.3-lts-centos7
+  jenkins:
+    image: registry.cn-hangzhou.aliyuncs.com/txlhub/jenkins:1.0.0
+    container_name: jenkins
     restart: always
-    network_mode: 'bridge'
+    network_mode: "bridge"
     privileged: true
     environment:
-      TZ: 'Asia/Shanghai'
+      TZ: "Asia/Shanghai"
     ports:
-      - 9003:8080
-      - 50000:50000
+      - "9003:8080"
+      - "50000:50000"
     volumes:
-      - ./data/jenkins_home:/var/jenkins_home
+      - ./data/var/jenkins_home:/var/jenkins_home
 # 安装过程中会出现 Docker 数据卷 权限问题，用以下命令解决：
 # sudo chown -R 1000 ./data
