@@ -5,10 +5,10 @@ FROM jenkins/jenkins:latest
 USER root
 
 # 复制node到容器
-ADD ./node-v14.15.0-linux-x64 /usr/local/share
+ADD ./node-v14.15.0-linux-x64 /usr/local/share/node-v14.15.0-linux-x64
 
 # 复制maven到容器
-ADD ./apache-maven-3.6.3 /usr/local/share
+ADD ./apache-maven-3.6.3 /usr/local/share/apache-maven-3.6.3
 
 # 置环境变量
 ENV PATH=$PATH:/usr/local/share/node-v14.15.0-linux-x64/bin
