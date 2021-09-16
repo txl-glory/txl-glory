@@ -5,7 +5,11 @@ services:
     container_name: flowable-ui670
     restart: always
     network_mode: "bridge"
+    environment:
+      TZ: "Asia/Shanghai"
     ports:
       - "8080:8080"
     volumes:
       - ./data/app:/app
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
