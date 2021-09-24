@@ -1,4 +1,4 @@
-# 一 ubuntu20.04安装docker.io和docker-compose
+# 一: ubuntu20.04安装docker.io和docker-compose
 ## 1.1 更改apt源
 ```shell script
 deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
@@ -19,7 +19,7 @@ sudo apt-get update
 sudo apt-get install docker.io docker-compose
 ```
 
-# 二 centos8安装docker-ce和docker-compose
+# 二: centos8安装docker-ce和docker-compose
 ## 2.1 背景介绍
 现在centos已经到了8 ，一直在ubuntu环境使用docker.io&docker-compose，客户突然要求使用centos8，尝试安装docker-ce&docker-compose，不料竟然还报了个错（缺少依赖），故及时记录一下，方便其他同学。
 
@@ -46,7 +46,7 @@ docker --version
 docker-compose --version
 ```
 
-# 三 docker加速
+# 三: docker加速
 ```shell script
 xxx@xxx:/etc/docker$ cat daemon.json
 {
