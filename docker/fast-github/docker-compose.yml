@@ -6,7 +6,5 @@ services:
     restart: always
     network_mode: "bridge"
     ports:
-      - "53:53"
-      - "80:80"
-      - "443:443"
+      - "8080:80"
       - "38457:38457"
