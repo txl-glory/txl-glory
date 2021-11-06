@@ -13,3 +13,5 @@ services:
       - ./data/app:/app
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+    external_links:
+      - mysql-5.7.34

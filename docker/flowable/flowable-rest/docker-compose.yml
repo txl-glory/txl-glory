@@ -14,3 +14,5 @@ services:
       - ./data/usr/share/fonts:/usr/share/fonts
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+    external_links:
+      - mysql-5.7.34
