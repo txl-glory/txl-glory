@@ -150,7 +150,7 @@ tianxuanling@txl-ubuntu-18-10-node0
 ```shell
 #4.1 更新apt源
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 6A030B21BA07F4FB
-sudo apt-get update 
+sudo apt-get update
 
 #4.2 查看docker版本
 tianxuanling@txl-ubuntu-18-10-master0:~$ sudo apt show docker.io

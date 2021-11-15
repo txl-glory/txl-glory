@@ -1,5 +1,9 @@
 # Jenkins 自动执行脚本
 
+## JGZG材料管理系统
+
+H/5 * * * *
+
 ```shell
 cd mms
 /home/apache-maven-3.6.3/bin/mvn -s "/home/apache-maven-3.6.3/conf/settings-mms.xml" clean package -Dmaven.test.skip=true

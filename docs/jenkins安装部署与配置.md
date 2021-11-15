@@ -3,12 +3,12 @@
 ## 一： 基础环境准备
 
 ### 1.1 安装环境表
-| 名称 | 版本 | 描述 |
-| :---: | :----: | :---: |
-| 操作系统 | Ubuntu 20.04 LTS | 操作系统 |
-| jenkins | image: jenkins/jenkins:2.249.3-lts-centos7 | 持续集成工具 |
-| docker.io | 20.10.7-0ubuntu1~20.04.1 | docker容器服务(- docker-ce 是 docker 官方维护的 - docker.io 是 Debian 团队维护的) |
-| docker-compose | 1.25.0-1 | docker容器编排 |
+|      名称      |                    版本                    |                                       描述                                        |
+| :------------: | :----------------------------------------: | :-------------------------------------------------------------------------------: |
+|    操作系统    |              Ubuntu 20.04 LTS              |                                     操作系统                                      |
+|    jenkins     | image: jenkins/jenkins:2.249.3-lts-centos7 |                                   持续集成工具                                    |
+|   docker.io    |          20.10.7-0ubuntu1~20.04.1          | docker容器服务(- docker-ce 是 docker 官方维护的 - docker.io 是 Debian 团队维护的) |
+| docker-compose |                  1.25.0-1                  |                                  docker容器编排                                   |
 
 ### 1.2 安装docker和docker-compose环境
 ```shell
