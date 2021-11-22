@@ -28,7 +28,7 @@ RUN apt-get install -y libicu66
 RUN mkdir /usr/local/share/fastgithub
 
 # 拷贝文件到容器
-ADD ./fastgithub_linux-x64-2.0.6 /usr/local/share/fastgithub
+ADD ./fastgithub_linux-x64-2.1.0 /usr/local/share/fastgithub
 
 # 执行命令
 RUN chown -R root:root /usr/local/share/fastgithub
@@ -37,7 +37,7 @@ RUN chown -R root:root /usr/local/share/fastgithub
 WORKDIR /usr/local/share/fastgithub
 
 #容器对外开放端口
-EXPOSE 80 38457
+EXPOSE 38457
 
 # 配置容器启动后执行的命令
 ENTRYPOINT ["/usr/local/share/fastgithub/fastgithub"]
