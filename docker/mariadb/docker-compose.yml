@@ -1,18 +1,20 @@
 version: '3.3'
 services:
-  mariadb-10-6-0:
-    image: mariadb:10.6.0
-    container_name: mariadb-10.6.0
+  mariadb:
+    image: mariadb:10.7.1-focal
+    container_name: mariadb-10.7.1-focal
     restart: always
     network_mode: "bridge"
     environment:
       TZ: Asia/Shanghai
-      MYSQL_ROOT_PASSWORD: shanhong
-    command: 
-      --character-set-server=utf8mb4
+      MYSQL_ROOT_PASSWORD: password
+    command:  
+      --character-set-server=utf8mb4 
       --collation-server=utf8mb4_unicode_ci
       --max_connections=2000
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - ./data/var/lib/mysql:/var/lib/mysql
+      - ./data/etc/mysql:/etc/mysql
+      - /etc/localtime:/etc/localtime:ro
     ports:
       - 3306:3306

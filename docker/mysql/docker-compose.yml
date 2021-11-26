@@ -14,5 +14,6 @@ services:
     volumes:
       - ./data/var/lib/mysql:/var/lib/mysql
       - ./data/etc/mysql:/etc/mysql
+      - /etc/localtime:/etc/localtime:ro
     ports:
       - 3306:3306
