@@ -28,7 +28,7 @@ RUN apt-get install -y libicu66
 RUN mkdir /usr/local/share/fastgithub
 
 # 拷贝文件到容器
-ADD ./fastgithub_linux-x64-2.1.0 /usr/local/share/fastgithub
+ADD ./fastgithub_linux-x64-2.1.2 /usr/local/share/fastgithub
 
 # 执行命令
 RUN chown -R root:root /usr/local/share/fastgithub
