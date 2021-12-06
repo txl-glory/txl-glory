@@ -1,10 +1,10 @@
-version: '3.3'
+version: "3.3"
 services:
-  pie-tile-service:
+  pie-tile-service: ##此服务可以不要
     image: htht/pie-tile-service:4.0
     container_name: pie-tile-service
     restart: always
-    network_mode: 'bridge'
+    network_mode: "bridge"
     environment:
       TZ: "Asia/Shanghai"
     volumes:
@@ -12,12 +12,12 @@ services:
       - ./data/map-server/data/pie-vector-tile-service:/bin/data
     ports:
       - 10000:8083
-  
+
   pie-vector-tile-service:
-    image: htht/pie-vector-tile-service:4.0
-    container_name: pie-vector-tile-service
+    image: registry.cn-hangzhou.aliyuncs.com/txlhub/gis-mapbox:pie-vector-tile-service-4.0
+    container_name: pie-vector-tile-service-4.0
     restart: always
-    network_mode: 'bridge'
+    network_mode: "bridge"
     environment:
       TZ: "Asia/Shanghai"
     volumes:
@@ -29,10 +29,10 @@ services:
       - 10002:8887
 
   pie-vector-tile-edtior:
-    image: htht/pie-vector-tile-edtior:4.0
-    container_name: pie-vector-tile-edtior
+    image: registry.cn-hangzhou.aliyuncs.com/txlhub/gis-mapbox:pie-vector-tile-edtior-4.0
+    container_name: pie-vector-tile-edtior-4.0
     restart: always
-    network_mode: 'bridge'
+    network_mode: "bridge"
     environment:
       TZ: "Asia/Shanghai"
     volumes:
