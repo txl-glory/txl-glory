@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=PyCharm
+Icon=/home/zhaosh/applications/pycharm-2020.1.1/bin/pycharm.svg
+Exec=/home/zhaosh/applications/pycharm-2020.1.1/bin/pycharm.sh
+Terminal=false                                                                                                                                                                                                       
+Categories=Development;

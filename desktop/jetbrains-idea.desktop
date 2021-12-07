@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Idea
+Icon=/home/zhaosh/applications/idea-IU-201.7223.91/bin/idea.svg
+Exec=/home/zhaosh/applications/idea-IU-201.7223.91/bin/idea.sh
+Terminal=false
+Categories=Development;

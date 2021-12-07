@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=postman
+Icon=/usr/local/share/Postman/app/icons/icon_128x128.png
+Exec=/usr/local/share/Postman
+Terminal=false
+Categories=Development;

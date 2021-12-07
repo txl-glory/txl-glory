@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=WebStorm
+Icon=/home/zhaosh/applications/WebStorm-201.7223.93/bin/webstorm.svg
+Exec=/home/zhaosh/applications/WebStorm-201.7223.93/bin/webstorm.sh
+Terminal=false
+Categories=Development;
