@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   fastgithub:
-    image: registry.cn-hangzhou.aliyuncs.com/txlhub/fastgithub:1.2.0
+    image: registry.cn-hangzhou.aliyuncs.com/txlhub/fastgithub:2.1.2
     container_name: fastgithub
     restart: always
     network_mode: "bridge"
