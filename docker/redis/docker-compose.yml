@@ -1,25 +1,9 @@
 version: '3.3'
 services:
-  master:
+  redis:
     image: redis
-    container_name: redis-master
+    container_name: redis
     restart: always
     network_mode: 'bridge'
     ports:
       - 6379:6379
-
-  slave1:
-    image: redis
-    container_name: redis-slave-1
-    restart: always
-    ports:
-      - 6380:6379
-    command: redis-server --slaveof redis-master 6379
-
-  slave2:
-    image: redis
-    container_name: redis-slave-2
-    restart: always
-    ports:
-      - 6381:6379
-    command: redis-server --slaveof redis-master 6379
