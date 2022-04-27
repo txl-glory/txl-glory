@@ -58,3 +58,5 @@ xxx@xxx:/etc/docker$ cat daemon.json
         ]
 }
 ```
+
+npm install  --registry=https://registry.npm.taobao.org 
