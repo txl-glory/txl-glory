@@ -1,14 +1,14 @@
 version : '3.8'
 services:
-  nacos210:
-    container_name: nacos210
+  nacos:
     image: nacos/nacos-server:v2.1.0
-    network_mode: 'bridge'
+    container_name: nacos
+    network_mode: bridge
     restart: always
     environment:
       - MODE=standalone
       - SPRING_DATASOURCE_PLATFORM=mysql
-      - MYSQL_SERVICE_HOST=192.168.1.211
+      - MYSQL_SERVICE_HOST=127.0.0.1
       - MYSQL_SERVICE_PORT=3306
       - MYSQL_SERVICE_DB_NAME=nacos
       - MYSQL_SERVICE_USER=root
@@ -17,3 +17,5 @@ services:
       - ./logs/:/home/nacos/logs
     ports:
       - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
