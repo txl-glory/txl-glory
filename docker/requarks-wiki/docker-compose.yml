@@ -1,0 +1,25 @@
+version : '3.8'
+services:
+  wiki:
+    image: ghcr.io/requarks/wiki:2.5
+    container_name: wiki
+    network_mode: bridge
+    restart: always
+    environment:
+      DB_TYPE: mysql
+      DB_HOST: mysql-db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASS: shanhong
+      DB_NAME: wiki
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "3000:3000"
+    networks:
+      - wdh
+    links:
+      - mysql:mysql-db
+networks:
+  wdh:
+    external: true
