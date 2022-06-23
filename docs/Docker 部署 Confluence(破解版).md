@@ -91,3 +91,121 @@ docker run -d --name confluence \
 <img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/shezhi-confluence.png"  height="100%" width="100%">
 </div>
 我们就选择一个应用吧
+<div align="center">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/huoquyingyong.png"  height="100%" width="100%">
+</div>
+
+### 2.6 破解
+生成confluence许可命令参照如下：
+```sh
+# 设置产品类型：-p conf， 详情可执行：java -jar atlassian-agent.jar 
+java -jar atlassian-agent.jar -d -m test@test.com -n BAT -p conf -o http://192.168.0.89 -s BTW4-2T4Y-9BTK-R0DP
+```
+
+复制服务器ID: BTW4-2T4Y-9BTK-R0DP
+在本地存放atlassian-agent.jar的目录下执行命令，生成许可证：
+需替换邮箱（test@test.com）、名称（BAT）、访问地址（http://192.168.0.89）、服务器ID（BTW4-2T4Y-9BTK-R0DP）为你的信息
+
+```sh
+java -jar atlassian-agent.jar \
+  -d -m test@test.com -n BAT \
+  -p jira -o http://192.168.0.89 \
+  -s BTW4-2T4Y-9BTK-R0DP
+```
+
+例如我的信息如下，生成许可证：
+
+```sh
+java -jar atlassian-agent.jar \
+  -d -m wangzan18@126.com -n BAT \
+  -p conf -o http://confluence.wzlinux.com \
+  -s BTW4-2T4Y-9BTK-R0DP
+
+====================================================
+=======        Atlassian Crack Agent         =======
+=======           https://zhile.io           =======
+=======          QQ Group: 30347511          =======
+====================================================
+
+Your license code(Don't copy this line!!!): 
+
+AAABXQ0ODAoPeJx1kV9vgjAUxd/7KUj2XG1R5p+EZArEmYEsotteK7tqEyikLW7s069UzJJlS/rQn
+HtPf/fc3mWNcBLWOpQ41JuT6dylTpDtHJe4BCWMCw2CiRyiz5rLNmQafJdMZ5hMzEExz0Gof4ohq
+FzyWvNK+HtR8JJreHeKq8U5tM5Z61rNh8OvMy9gwCsUVEKzXG9YCf5ysUMZyAvIdegvR49jHNL0F
+a+25A0/Be4K5ZU4DjZNeQCZHvcKpPIxRak8McEVs9QOYN7vOosGTIpBXpXS1MRJddcbMDJBC/+Di
+dMXE3T6QN17W7aIPuOurcEOFqRJEm2D9SJGgQQL6pO7BBMPU3Jbixk8XodZtMEx9aYzMht7hI4mH
+jKS/4dscWYcfgFfywZQdGFFc41yZIUC9NzI/MwU/AZmzeFn19Zq38o0kxpkb7aScbIARKfavv47X
+sz6Oq/7DWevrTUwLgIVAIEyoNFjmUFyTJOVUzmxTJTM14S8AhUAkaRbRjdl4D9MZtO6l5nCHcR2B
+80=X02h9
+```
+
+将生成的许可证复制到页面，完成破解。
+<div align="center">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/shouquanma.png"  height="100%" width="100%">
+</div>
+
+选择单机模式，并设置数据库
+<div align="center">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/bushuleixing.png"  height="100%" width="100%">
+</div>
+
+需要事先创建数据库，并且设置如下：
+<div align="center">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/shujukushezhi.png"  height="100%" width="100%">
+</div>
+
+还有开头的事务级别
+```sql
+mysql> set global tx_isolation='READ-COMMITTED';
+Query OK, 0 rows affected (0.00 sec)
+```
+
+注意一下：数据库url连接中用的是utf8,不能用utf8mb4.
+
+```
+jdbc:mysql://192.168.0.254/confluence?useUnicode=true&characterEncoding=utf8
+```
+<div align="center">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/shezhishujuku.png"  height="100%" width="100%">
+</div>
+
+### 2.7 配置 confluence
+我们做个示范站点
+<div align="center">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/jiazaineirong.png"  height="100%" width="100%">
+</div>
+
+配置用户管理，这里我们选择之前创建好的 jira
+<div align="center">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/peizhiyonghu.png"  height="100%" width="100%">
+</div>
+
+配置连接信息
+<div align="center">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/jiralianjie.png"  height="100%" width="100%">
+</div>
+
+同步数据
+<div align="center">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/tongbushuju.png"  height="100%" width="100%">
+</div>
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/shezhichenggong.png"  height="100%" width="100%">
+</div>
+登陆查看授权情况
+站点管理，一般设置，授权细节
+<div align="center">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/shouquanxijie.png"  height="100%" width="100%">
+</div>
+<div align="center">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/zhandianguanli.png"  height="100%" width="100%">
+</div>
+
+## 3 乱码问题
+在我们正常安装之后，中文可能会有乱码，我们修改一下连接字符串，在 confluence 的家目录下面，有一个配置文件confluence.cfg.xml，找到hibernate.connection.url，在数据库字符串后面加上如下字符，整体结果如下：
+```
+jdbc:mysql://172.17.64.10/confdb?useUnicode=true&characterEncoding=utf8
+```
+记住，里面的amp;不要省略。
+如果可以的话，把数据库的字符串改成utf8mb4
