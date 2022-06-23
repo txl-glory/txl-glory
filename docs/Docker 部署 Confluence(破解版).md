@@ -88,6 +88,6 @@ docker run -d --name confluence \
 ### 2.5 访问 confluence
 访问 IP:18010，参照JIRA的安装流程，进行操作。可在引导过程中，与之前安装的JIRA进行绑定关联。
 <div align="center">
-<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/设置confluence.png"  height="100%" width="100%">
+<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/confluence/shezhi-confluence.png"  height="100%" width="100%">
 </div>
-
+我们就选择一个应用吧
