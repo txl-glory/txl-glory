@@ -206,6 +206,7 @@ jdbc:mysql://192.168.0.254/confluence?useUnicode=true&characterEncoding=utf8
 在我们正常安装之后，中文可能会有乱码，我们修改一下连接字符串，在 confluence 的家目录下面，有一个配置文件confluence.cfg.xml，找到hibernate.connection.url，在数据库字符串后面加上如下字符，整体结果如下：
 ```
 jdbc:mysql://172.17.64.10/confdb?useUnicode=true&characterEncoding=utf8
+jdbc:mysql://192.168.1.211:3306/confluence?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
 ```
 记住，里面的amp;不要省略。
 如果可以的话，把数据库的字符串改成utf8mb4

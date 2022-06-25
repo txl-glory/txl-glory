@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   confluence:
-    image: registry.cn-hangzhou.aliyuncs.com/txlhub/confluence:7.16.2
+    image: registry.cn-hangzhou.aliyuncs.com/txlhub/confluence:7.13.7
     container_name: confluence
     restart: always
     network_mode: bridge
@@ -9,6 +9,7 @@ services:
       TZ: Asia/Shanghai
     volumes:
       - ./data/confluence:/var/atlassian/application-data/confluence
+      - ./data/opt-confluence/confluence:/opt/atlassian/confluence
       - /etc/localtime:/etc/localtime:ro
     ports:
       - 8090:8090
