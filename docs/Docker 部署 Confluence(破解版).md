@@ -99,7 +99,7 @@ docker run -d --name confluence \
 生成confluence许可命令参照如下：
 ```sh
 # 设置产品类型：-p conf， 详情可执行：java -jar atlassian-agent.jar 
-java -jar atlassian-agent.jar -d -m test@test.com -n BAT -p conf -o http://192.168.0.89 -s BTW4-2T4Y-9BTK-R0DP
+java -jar atlassian-agent.jar -d -m test@test.com -n BAT -p conf -o http://192.168.0.221 -s BTW4-2T4Y-9BTK-R0DP
 ```
 
 复制服务器ID: BTW4-2T4Y-9BTK-R0DP
@@ -207,6 +207,7 @@ jdbc:mysql://192.168.0.254/confluence?useUnicode=true&characterEncoding=utf8
 ```
 jdbc:mysql://172.17.64.10/confdb?useUnicode=true&characterEncoding=utf8
 jdbc:mysql://192.168.1.211:3306/confluence?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
+jdbc:mysql://192.168.1.211:3306/confluence?useUnicode=true&characterEncoding=utf8&useSSL=false
 ```
 记住，里面的amp;不要省略。
 如果可以的话，把数据库的字符串改成utf8mb4

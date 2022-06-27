@@ -1,5 +1,5 @@
 # 基础镜像
-FROM atlassian/confluence:7.13.7
+FROM atlassian/confluence:7.12.6
 
 # 维护者
 LABEL shuyuan.timespace.image.authors="zhaosh"
