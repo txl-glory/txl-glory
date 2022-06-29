@@ -4,17 +4,13 @@ services:
     image: postgres:14.2
     container_name: postgres-14-2
     restart: always
+    network_mode: bridge
     environment:
       TZ: Asia/Shanghai
-      POSTGRES_USER: kong
-      POSTGRES_DB: kong
+      POSTGRES_USER: sysk
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
     volumes:
       - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
     ports:
       - 5432:5432
-    networks:
-      - kong-net
-networks:
-  kong-net:
-    external: true
