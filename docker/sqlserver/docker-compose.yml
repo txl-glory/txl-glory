@@ -8,7 +8,7 @@ services:
         #接受最终用户许可协议
       - ACCEPT_EULA=Y
         #SA用户密码
-      - SA_PASSWORD=shanhong!@123456
+      - SA_PASSWORD=password.com
     ports:
       - 1433:1433
     volumes:
