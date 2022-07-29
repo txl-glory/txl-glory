@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3.8"
 services:
   oracle-11g:
     image: filemon/oracle_11g
