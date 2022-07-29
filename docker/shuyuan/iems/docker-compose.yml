@@ -14,9 +14,9 @@ services:
       - 1433:1433
     networks:
       - iems
-  sy-iems:
-    image: registry.cn-hangzhou.aliyuncs.com/cnnit/sy-iems:1.0.0
-    container_name: sy-iems
+  iems-system:
+    image: registry.cn-hangzhou.aliyuncs.com/cnnit/iems-system:1.0.0
+    container_name: iems-system
     restart: always
     environment:
       TZ: 'Asia/Shanghai'
@@ -26,12 +26,12 @@ services:
       IEMS_SERVER_HOST: '192.168.1.135'
     ports:
       - 8080:8080
-    networks:
-      - iems
     links:
       - iems-sqlserver:sqlserver
     depends_on:
       - iems-sqlserver
+    networks:
+      - iems
   iems-nginx:
     image: registry.cn-hangzhou.aliyuncs.com/cnnit/iems-nginx:1.0.0
     container_name: iems-nginx
@@ -39,12 +39,12 @@ services:
     environment:
       TZ: 'Asia/Shanghai'
       NGINX_PORT: '80'
-      #进出口后台地址
-      IEMS_HOST: '192.168.1.135:8080'
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
       - 9090:80
+    links:
+      - iems-system:iems-system
     networks:
       - iems
 networks:
