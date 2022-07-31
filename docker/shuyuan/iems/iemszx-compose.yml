@@ -24,12 +24,12 @@ services:
       SQLSERVER_HOST: 'sqlserver'
     ports:
       - 8080:8080
-    networks:
-      - iems
     links:
       - iems-sqlserver:sqlserver
     depends_on:
       - iems-sqlserver
+    networks:
+      - iems
   iems-nginx:
     image: registry.cn-hangzhou.aliyuncs.com/cnnit/iems-nginx:1.0.0
     container_name: iems-nginx
