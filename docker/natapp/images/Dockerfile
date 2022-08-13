@@ -15,4 +15,4 @@ RUN chmod 755 /usr/local/share/natapp/natapp
 EXPOSE 80
 
 # 配置容器启动后执行的命令
-ENTRYPOINT ["nohup", "/usr/local/share/natapp/natapp", "-authtoken=c5445b5", "-log=stdout", "-loglevel=ERROR", "&"]
+ENTRYPOINT ["nohup", "/usr/local/share/natapp/natapp", "-authtoken=21f156c524205249", "-log=stdout", "-loglevel=ERROR", "&"]
