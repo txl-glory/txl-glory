@@ -21,7 +21,7 @@ services:
 ```
 
 ## 配置openvpn容器
-docker-compose run --rm openvpn ovpn_genconfig -u udp://ip 
+docker-compose run --rm openvpn ovpn_genconfig -u udp://ip
 ip为公网IP地址
 
 ## 初始化
