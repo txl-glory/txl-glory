@@ -1,7 +1,7 @@
-version: '3.3'
+version: '3.8'
 services:
   txl-natapp:
-    image: txl/natapp:latest
+    image: registry.cn-hangzhou.aliyuncs.com/txlhub/natapp:yfhx-tcp200
     container_name: txl-natapp
     restart: always
     network_mode: 'bridge'

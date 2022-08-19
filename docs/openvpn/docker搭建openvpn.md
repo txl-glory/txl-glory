@@ -15,7 +15,7 @@ services:
     ports:
       - 1194:1194/udp
     volumes:
-      - ./data/openvpn:/etc/openvpn\
+      - ./data/openvpn:/etc/openvpn
     cap_add: 
       - NET_ADMIN
 ```
