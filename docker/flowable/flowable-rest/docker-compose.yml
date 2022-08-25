@@ -1,8 +1,8 @@
 version: "3.3"
 services:
-  flowable-rest670:
-    image: flowable/flowable-rest:6.7.0
-    container_name: flowable-rest670
+  flowable-rest:
+    image: flowable/flowable-rest:6.7.2
+    container_name: flowable-rest
     restart: always
     network_mode: "bridge"
     environment:

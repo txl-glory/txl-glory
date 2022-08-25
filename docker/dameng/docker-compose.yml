@@ -9,5 +9,6 @@ services:
       TZ: 'Asia/Shanghai'
     ports:
       - 5236:5236
+      - 5237:5237
     volumes:
       - ./data:/data
