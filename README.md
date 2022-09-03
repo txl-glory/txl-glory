@@ -1,5 +1,7 @@
-# 一: ubuntu20.04安装docker.io和docker-compose
-## 1.1 更改apt源
+# 一: ubuntu20.04 安装 docker.io 和 docker-compose
+
+## 1.1 更改 apt 源
+
 ```shell script
 deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
 deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
@@ -13,17 +15,21 @@ deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe m
 deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
 ```
 
-## 1.2 安装docker.io和docker-compose
+## 1.2 安装 docker.io 和 docker-compose
+
 ```shell script
 sudo apt-get update
 sudo apt-get install docker.io docker-compose
 ```
 
-# 二: centos8安装docker-ce和docker-compose
+# 二: centos8 安装 docker-ce 和 docker-compose
+
 ## 2.1 背景介绍
-现在centos已经到了8 ，一直在ubuntu环境使用docker.io&docker-compose，客户突然要求使用centos8，尝试安装docker-ce&docker-compose，不料竟然还报了个错（缺少依赖），故及时记录一下，方便其他同学。
+
+现在 centos 已经到了 8 ，一直在 ubuntu 环境使用 docker.io&docker-compose，客户突然要求使用 centos8，尝试安装 docker-ce&docker-compose，不料竟然还报了个错（缺少依赖），故及时记录一下，方便其他同学。
 
 ## 2.2 安装步骤
+
 ```shell script
 # 1.1下载docker-ce的repo
 curl https://download.docker.com/linux/centos/docker-ce.repo -o /etc/yum.repos.d/docker-ce.repo
@@ -46,7 +52,8 @@ docker --version
 docker-compose --version
 ```
 
-# 三: docker加速
+# 三: docker 加速
+
 ```shell script
 xxx@xxx:/etc/docker$ cat daemon.json
 {
@@ -59,4 +66,10 @@ xxx@xxx:/etc/docker$ cat daemon.json
 }
 ```
 
-npm install  --registry=https://registry.npm.taobao.org 
+# 四：docker 查看资源情况
+
+```shell
+docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
+```
+
+npm install --registry=https://registry.npm.taobao.org
