@@ -1,17 +1,21 @@
 # idea-doc 使用文档
 
-## java 注释模板
+## java 类注释模版
 
 ```
-# File Header
 /**
  * description: ${NAME} <br>
  * date: ${DATE} ${TIME} <br>
- * author: zhaosh <br>
+ * author: username <br>
  */
+```
 
- # Live Templates
- *
+## Java 方法注释模版：
+
+```
+# Live Templates
+
+*
   * description: $description$ <br>
   * date: $date$ $time$ <br>
   * author: zhaosh <br>
