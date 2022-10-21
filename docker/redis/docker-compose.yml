@@ -5,5 +5,6 @@ services:
     container_name: redis
     restart: always
     network_mode: 'bridge'
+    command: redis-server --requirepass yourpassword
     ports:
       - 6379:6379
