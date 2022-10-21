@@ -12,3 +12,5 @@ services:
       - '2290:22'
       - '9400:8080'
 # 用户名和密码：root/root
+### centos7解决 docker Failed to get D-Bus connection 报错
+# sudo docker run --privileged -d -ti -e "container=docker" centos  /usr/sbin/init
