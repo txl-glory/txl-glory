@@ -69,7 +69,7 @@ xxx@xxx:/etc/docker$ cat daemon.json
 # 四：docker 查看资源情况
 
 ```shell
-docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
+docker stats --format "table {{.Container}}\t{{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}"
 ```
 
 npm install --registry=https://registry.npm.taobao.org
