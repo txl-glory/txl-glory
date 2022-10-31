@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=PyCharm
+Icon=/home/zhaosh/applications/GoLand-2021.3.3/bin/pycharm.svg
+Exec=/home/zhaosh/applications/GoLand-2021.3.3/bin/pycharm.sh
+Terminal=false                                                                                                                                                                                                       
+Categories=Development;
