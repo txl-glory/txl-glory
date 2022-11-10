@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  oracle-12c:
+    image: wangpengcheng/oracle12c-enterprise:12.2.0.1-sys
+    container_name: oracle-12c
+    privileged: true
+    restart: always
+    network_mode: "bridge"
+    environment:
+      TZ: "Asia/Shanghai"
+    ports:
+      - 1521:1521
+    volumes:
+      - ./data:/bofm/oracle12c
+# 连接参数如下
+# hostname: localhost
+# port: 1521
+# sid: ORCL
+# service name: ORCL
+# username: system
+# password: system
