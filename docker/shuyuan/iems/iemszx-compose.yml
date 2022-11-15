@@ -21,7 +21,7 @@ services:
     environment:
       TZ: 'Asia/Shanghai'
       #sqlserver数据库地址
-      SQLSERVER_HOST: 'sqlserver'
+      DATABASE_HOST: 'sqlserver'
     ports:
       - 8080:8080
     links:
