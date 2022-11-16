@@ -4,6 +4,7 @@ services:
     image: keking/kkfileview:v4.0.0
     container_name: kkfileview-v4.0.0
     restart: always
+    network_mode: "bridge"
     ports:
       - 8012:8012
     volumes:
