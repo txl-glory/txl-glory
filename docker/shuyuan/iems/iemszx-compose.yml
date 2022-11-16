@@ -30,7 +30,7 @@ services:
       #sqlserver数据库地址
       DATABASE_HOST: iems-sqlserver
     ports:
-      - 8080:8080
+      - 10000:8080
     links:
       - iems-sqlserver:iems-sqlserver
     depends_on:
@@ -45,7 +45,7 @@ services:
       TZ: "Asia/Shanghai"
       NGINX_PORT: "9090"
     ports:
-      - 9090:9090
+      - 10001:9090
     links:
       - iems-system:iems-system
     networks:
