@@ -7,7 +7,10 @@ services:
     network_mode: 'bridge'
     environment:
       TZ: 'Asia/Shanghai'
+    command: /bin/bash -c "nohup /opt/dmdbms/bin/dmserver /data/DAMENGCASE/dm5237/dm.ini &"
     ports:
       - 5236:5236
+      - 5237:5237
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./data:/data

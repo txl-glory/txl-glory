@@ -4,10 +4,10 @@ services:
     image: nginx:1.18
     container_name: nginx-1.18
     restart: always
-	  network_mode: 'bridge'
+    network_mode: 'bridge'
     environment:
-#      - NGINX_HOST=foobar.com
-      - NGINX_PORT=80
+      TZ: 'Asia/Shanghai'
+      NGINX_PORT: '80'
     ports:
       - 9091:80
     volumes:

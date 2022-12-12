@@ -1,25 +1,16 @@
-version: '3.3'
+version: '3.8'
 services:
-  postgres-9-6:
-    image: postgres:9.6
-    container_name: postgres-9-6
+  postgres-14-2:
+    image: postgres:14.2
+    container_name: postgres-14-2
     restart: always
-    network_mode: 'bridge'
+    network_mode: bridge
     environment:
       TZ: Asia/Shanghai
-      POSTGRES_USER: kong
-      POSTGRES_DB: kong
-      POSTGRES_PASSWORD: kong
+      POSTGRES_USER: sysk
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
     volumes:
       - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
     ports:
       - 5432:5432
-
-      docker run --rm \
-      --link postgres-9-6:postgres-9-6 \
-      -e "KONG_DATABASE=postgres" \
-      -e "KONG_PG_HOST=postgres-9-6" \
-      -e "KONG_PG_USER=kong" \
-      -e "KONG_PG_PASSWORD=kong" \
-      -e "KONG_CASSANDRA_CONTACT_POINTS=postgres-9-6" \
-      kong kong migrations bootstrap

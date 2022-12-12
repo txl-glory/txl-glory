@@ -2,7 +2,7 @@
 FROM ubuntu:20.10
 
 # 维护者
-MAINTAINER txl
+LABEL shuyuan.timespace.image.authors="zhaosh"
 
 # 设置用户组
 USER root:root

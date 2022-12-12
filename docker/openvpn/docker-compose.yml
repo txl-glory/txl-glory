@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  openvpn: 
+    image: kylemanna/openvpn:2.4
+    container_name: openvpn
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: 'Asia/Shanghai'
+    ports:
+      - 1194:1194/udp
+    volumes:
+      - ./data/openvpn:/etc/openvpn\
+    cap_add: 
+      - NET_ADMIN

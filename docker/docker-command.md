@@ -114,3 +114,15 @@ vm.max_map_count=655360
 2. 使配置立即生效
 sysctl -p
 ```
+
+## 因为sonarqube中集成了es，需要对服务器参数设置一下
+
+```sh
+sudo sysctl -w vm.max_map_count=524288
+sudo sysctl -w fs.file-max=131072
+ulimit -n 131072
+ulimit -u 8192
+
+echo "vm.max_map_count=524288" >> /etc/sysctl.conf
+sysctl -p
+```

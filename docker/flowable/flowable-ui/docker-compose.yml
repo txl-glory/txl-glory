@@ -1,8 +1,8 @@
 version: "3.3"
 services:
-  flowable-ui670:
-    image: flowable/flowable-ui:6.7.0
-    container_name: flowable-ui670
+  flowable-ui:
+    image: flowable/flowable-ui:6.7.2
+    container_name: flowable-ui
     restart: always
     network_mode: "bridge"
     environment:

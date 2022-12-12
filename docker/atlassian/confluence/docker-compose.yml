@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  confluence:
+    image: registry.cn-hangzhou.aliyuncs.com/txlhub/confluence:7.12.6
+    container_name: confluence
+    restart: always
+    network_mode: bridge
+    environment:
+      TZ: Asia/Shanghai
+      JAVA_OPTS: "-Xms2048m -Xmx4096m -XX:PermSize=512m -XX:MaxPermSize=1024m"
+      CATALINA_OPTS: "-Xms2048m -Xmx4096m -XX:PermSize=512m -XX:MaxPermSize=1024m"
+    volumes:
+      - ./data/confluence:/var/atlassian/application-data/confluence
+      - ./data/opt-confluence/confluence:/opt/atlassian/confluence
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 8090:8090
+      - 8091:8091

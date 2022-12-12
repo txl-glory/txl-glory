@@ -1,0 +1,55 @@
+version: "3.8"
+services:
+  iems-sqlserver:
+    image: registry.cn-hangzhou.aliyuncs.com/cnnit/iems-sqlserver:1.0.0
+    container_name: iems-sqlserver
+    restart: always
+    environment:
+      TZ: "Asia/Shanghai"
+      #接受最终用户许可协议
+      ACCEPT_EULA: "Y"
+      #SA用户密码
+      SA_PASSWORD: "password.com"
+    ports:
+      - 1433:1433
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 500M
+        reservations:
+          memory: 100M
+    networks:
+      - iems
+  iems-system:
+    image: registry.cn-hangzhou.aliyuncs.com/cnnit/iems-system:1.0.0
+    container_name: iems-system
+    restart: always
+    environment:
+      TZ: "Asia/Shanghai"
+      #sqlserver数据库地址
+      DATABASE_HOST: iems-sqlserver
+    ports:
+      - 10000:8080
+    links:
+      - iems-sqlserver:iems-sqlserver
+    depends_on:
+      - iems-sqlserver
+    networks:
+      - iems
+  iems-nginx:
+    image: registry.cn-hangzhou.aliyuncs.com/cnnit/iems-nginx:1.0.0
+    container_name: iems-nginx
+    restart: always
+    environment:
+      TZ: "Asia/Shanghai"
+      NGINX_PORT: "9090"
+    ports:
+      - 10001:9090
+    links:
+      - iems-system:iems-system
+    networks:
+      - iems
+networks:
+  iems:
+    external: true
