@@ -13,5 +13,7 @@ services:
       - "50000:50000"
     volumes:
       - ./data/var/jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker-compose:/usr/bin/docker-compose
 # 安装过程中会出现 Docker 数据卷 权限问题，用以下命令解决：
 # sudo chown -R 1000 ./data
