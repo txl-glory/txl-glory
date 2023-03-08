@@ -1,0 +1,9 @@
+version: "3.3"
+services:
+  ajreport:
+    image: registry.cn-hangzhou.aliyuncs.com/txlhub/aj-report:0.9.9
+    container_name: ajreport
+    restart: always
+    network_mode: "bridge"
+    ports:
+      - "9095:9095"
