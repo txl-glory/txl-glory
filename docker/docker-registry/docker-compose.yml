@@ -5,7 +5,8 @@ services:
     restart: always
     container_name: docker-registry
     environment:
-      - REGISTRY_HTTP_ADDR=0.0.0.0:5000
+      TZ: "Asia/Shanghai"
+      REGISTRY_HTTP_ADDR: "0.0.0.0:5000"
     ports:
       - 5000:5000
     volumes:
@@ -17,11 +18,12 @@ services:
     container_name: docker-registry-frontend
     ports:
       - 5001:80
-        #volumes:
-        #- ./certs/frontend.crt:/etc/apache2/server.crt:ro
-        #- ./certs/frontend.key:/etc/apache2/server.key:ro
+    volumes:
+      - ./certs/frontend.crt:/etc/apache2/server.crt:ro
+      - ./certs/frontend.key:/etc/apache2/server.key:ro
     environment:
-      - ENV_DOCKER_REGISTRY_HOST=txl-deepin
-      - ENV_DOCKER_REGISTRY_PORT=5000
+      TZ: "Asia/Shanghai"
+      ENV_DOCKER_REGISTRY_HOST: txl-deepin
+      ENV_DOCKER_REGISTRY_PORT: 5000
     links: 
       - registry:txl-deepin

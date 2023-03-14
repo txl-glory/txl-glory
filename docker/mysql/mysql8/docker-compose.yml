@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0.25
+    container_name: mysql8.0
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: Asia/Shanghai
+      LANG: en_US.UTF-8
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - 3306:3306
+    volumes:
+      - ./conf:/etc/mysql/conf.d
+      - ./conf/my.cnf:/etc/mysql/my.cnf
+      - ./logs:/var/log/mysql
+      - ./data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysql --host=127.0.0.1 --user=root --password=$$MYSQL_ROOT_PASSWORD --silent --execute \"SELECT 1;\"  || exit 0"
+        ]
+      interval: 15s #健康检查的时间间隔，默认为 30s。
+      timeout: 10s #健康检查的超时时间，默认为 30s。
+      retries: 3 #连续几次健康检查失败即认为容器不健康，默认为 3。
