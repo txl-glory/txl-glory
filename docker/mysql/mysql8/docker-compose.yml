@@ -1,8 +1,8 @@
 version: '3.8'
 services:
   mysql:
-    image: mysql:8.0.25
-    container_name: mysql8.0
+    image: mysql:8.0.32
+    container_name: mysql-8.0.32
     restart: always
     network_mode: 'bridge'
     environment:
@@ -12,10 +12,9 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./conf:/etc/mysql/conf.d
-      - ./conf/my.cnf:/etc/mysql/my.cnf
-      - ./logs:/var/log/mysql
-      - ./data:/var/lib/mysql
+      - ./data/etc-mysql:/etc/mysql
+      - ./data/var-log-mysql:/var/log/mysql
+      - ./data/var-lib-mysql:/var/lib/mysql
     healthcheck:
       test:
         [
