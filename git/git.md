@@ -1,4 +1,4 @@
-# Git设置
+# Git 设置
 
 初次运行 Git 前的配置
 一般在新的系统上，我们都需要先配置下自己的 Git 工作环境。配置工作只需一次，以后升级时还会沿用现在的配置。当然，如果需要，你随时可以用相同的命令修改已有的配置。
@@ -51,9 +51,30 @@ git config --global merge.log true
 git config --global rebase.autosquash true
 ```
 
+## 永久记住密码 (全局)
+
+```shell
+git config --global credential.helper store
+
+## 会在~/.gitconfig文件中生成下面的配置。
+[credential]
+	helper = store
+```
+
+## 临时记住密码
+
+```shell
+## 默认记住15分钟：
+git config –global credential.helper cache
+
+## 下面是自定义配置记住1小时：
+git config credential.helper ‘cache –timeout=3600’
+```
+
 ## 查看配置
 
 以上设置执行完成后，可以通过以下命令查看是否配置正确。
+
 ```bash
 git config --global --list
 ```
@@ -62,7 +83,7 @@ git config --global --list
 
 ## fatal: early EOF fatal: index-pack failed
 
-可以将这些行添加到全局git配置文件.gitconfig中，这个文件在用户家目录下
+可以将这些行添加到全局 git 配置文件.gitconfig 中，这个文件在用户家目录下
 
 ```config
 [user]
@@ -74,7 +95,7 @@ git config --global --list
 	lowSpeedTime = 999999
 [core]
 	compression = 0
-[pack] 
+[pack]
 	deltaCacheSize = 2047m
 	packSizeLimit = 2047m
 	windowMemory = 2047m
