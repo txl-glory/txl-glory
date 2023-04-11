@@ -51,6 +51,26 @@ git config --global merge.log true
 git config --global rebase.autosquash true
 ```
 
+## git config pull.rebase后面加true和false的区别。
+在 Git 中，git pull 命令用于从远程仓库拉取最新的代码，并自动合并到本地分支中。默认情况下，git pull 命令执行的是 "merge" 操作，即将远程分支的代码合并到本地分支中。
+
+在 Git 中还有另一种合并方式，称为 "rebase"。通过 git config pull.rebase 命令可以配置 git pull 命令的默认行为，以决定执行 "merge" 还是 "rebase" 操作。
+
+当执行 git config pull.rebase true 命令时，表示在执行 git pull 命令时默认使用 "rebase" 操作。这种操作会将本地分支的修改应用于远程分支的基础之上，从而保持提交历史的线性，避免了 "merge" 操作带来的额外的合并提交。但是，使用 "rebase" 操作也可能导致代码冲突和修改历史被覆盖的问题，因此需要谨
+慎使用。
+
+当执行 git config pull.rebase false 命令时，表示在执行 git pull 命令时默认使用 "merge" 操作。这种操作会将远程分支的代码合并到本地分支中，并且会创建一个新的合并提交，将两个分支的修改合并在一起，保留了分支的提交历史。
+
+通常情况下，"merge" 操作比 "rebase" 操作更加安全和易于理解。
+
+因此，设置 pull.rebase 为 true 或 false 的区别在于 git pull 命令执行的合并方
+式。根据具体情况和需求选择合适的合并方式。
+```bash
+git config pull.rebase false： #这是默认的合并策略，它会在本地创建一个新的合并提交，将本地分支和远程分支合并在一起。这种策略会保留分支历史，但可能会产生一些不必要的合并提交。
+git config pull.rebase true： #这是将本地提交“变基”到远程分支的策略。这意味着将本地提交应用到远程分支之上，以便使得历史记录更加线性，不会产生合并提交。但是，变基操作可能会更改提交的SHA值，因此可能会破坏其他人的工作，需要谨慎使用。
+git config pull.ff only： #这个选项只会允许快进合并，也就是只有在本地分支的提交历史是远程分支的子集时才会自动合并。这种策略会保持线性历史，并且不会创建任何新的提交。但是，这种策略可能会导致某些提交丢失，因为快进合并可能会覆盖本地提交。
+```
+
 ## 查看配置
 
 以上设置执行完成后，可以通过以下命令查看是否配置正确。
