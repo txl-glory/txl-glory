@@ -9,6 +9,7 @@ services:
       TZ: Asia/Shanghai
       LANG: en_US.UTF-8
       MYSQL_ROOT_PASSWORD: password
+    command: --lower-case-table-names=1
     ports:
       - 3306:3306
     volumes:
