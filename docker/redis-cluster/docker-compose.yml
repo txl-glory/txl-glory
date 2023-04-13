@@ -1,0 +1,83 @@
+version: '3.8'
+services:
+  redis6379:
+    image: redis
+    container_name: redis6379
+    restart: always
+    network_mode: 'bridge'
+    command: ["redis-server","/usr/local/etc/redis/redis.conf","--requirepass password"]
+    volumes:
+      - ./conf6379/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - 6379:6379
+      - 16379:16379
+  redis6380:
+    image: redis
+    container_name: redis6380
+    restart: always
+    network_mode: 'bridge'
+    command: ["redis-server","/usr/local/etc/redis/redis.conf","--requirepass password"]
+    volumes:
+      - ./conf6380/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - 6380:6380
+      - 16380:16380
+  redis6381:
+    image: redis
+    container_name: redis6381
+    restart: always
+    network_mode: 'bridge'
+    command: ["redis-server","/usr/local/etc/redis/redis.conf","--requirepass password"]
+    volumes:
+      - ./conf6381/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - 6381:6381
+      - 16381:16381
+  redis6382:
+    image: redis
+    container_name: redis6382
+    restart: always
+    network_mode: 'bridge'
+    command: ["redis-server","/usr/local/etc/redis/redis.conf","--requirepass password"]
+    volumes:
+      - ./conf6382/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - 6382:6382
+      - 16382:16382
+  redis6383:
+    image: redis
+    container_name: redis6383
+    restart: always
+    network_mode: 'bridge'
+    command: ["redis-server","/usr/local/etc/redis/redis.conf","--requirepass password"]
+    volumes:
+      - ./conf6383/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - 6383:6383
+      - 16383:16383
+  redis6384:
+    image: redis
+    container_name: redis6384
+    restart: always
+    network_mode: 'bridge'
+    command: ["redis-server","/usr/local/etc/redis/redis.conf","--requirepass password"]
+    volumes:
+      - ./conf6384/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - 6384:6384
+      - 16384:16384
+
+## 进入redis第一个6379节点容器并执行如下命令创建redis集群
+# redis-cli --cluster create 192.168.1.200:6379 192.168.1.200:6380 192.168.1.200:6381 192.168.1.200:6382 192.168.1.200:6383 192.168.1.200:6384 --cluster-replicas 1 -a password
+
+## 依次进入其他的redis节点容器相应的redis客户端并执行如下命令加入redis集群
+# redis-cli -c -h 192.168.1.200 -p 6380 -a password
+# cluster meet 192.168.1.200 6379
+
+## 连接redis集群
+# redis-cli -c -h 192.168.1.200 -p 6379 -a password
+
+## 查看集群状态
+# cluster info
+## 查看集群信息
+# cluster nodes
