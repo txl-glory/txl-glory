@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  kali-release:
+    image: kalilinux/kali-last-release:i386
+    container_name: kali-release
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      - '2290:22'
+
+# 用户名和密码：root/root
