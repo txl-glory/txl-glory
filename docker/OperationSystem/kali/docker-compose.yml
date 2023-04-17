@@ -1,12 +1,13 @@
 version: '3.8'
 services:
   kali-release:
-    image: kalilinux/kali-last-release:i386
+    image: kalilinux/kali-last-release:latest
     container_name: kali-release
     restart: always
     network_mode: 'bridge'
     environment:
       - TZ=Asia/Shanghai
+    command: apt update && apt -y install kali-linux-large
     ports:
       - '2290:22'
 
