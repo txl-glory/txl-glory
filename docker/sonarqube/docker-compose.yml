@@ -1,25 +1,22 @@
 version: '3.8'
 services:
   sonarqube:
-    image: sonarqube:9.5.0-community
+    image: sonarqube:10.1-community
     container_name: sonarqube
     restart: always
     network_mode: bridge
     environment:
       TZ: Asia/Shanghai
       JAVA_OPTS: "-Xms2048m -Xmx4096m -XX:PermSize=512m -XX:MaxPermSize=1024m"
-      SONARQUBE_JDBC_USERNAME: sysk
+      SONARQUBE_JDBC_USERNAME: postgres
       SONARQUBE_JDBC_PASSWORD: password
-      SONARQUBE_JDBC_URL: jdbc:postgresql://192.168.0.221:5432/sonarqube
+      SONARQUBE_JDBC_URL: jdbc:postgresql://postgres:5432/sonarqube
     command:
       - -Dsonar.ce.javaOpts=-Xmx2048m
       - -Dsonar.web.javaOpts=-Xmx2048m
       - -Dsonar.search.javaOpts=-Xms256m -Xmx256m
       - -Dsonar.web.context=/sonarqube
     volumes:
-      - ./data/extensions:/opt/sonarqube/extensions
-      - ./data/logs:/opt/sonarqube/logs
-      - ./data/data:/opt/sonarqube/data
-      - ./data/conf:/opt/sonarqube/conf
+      - ./data/sonarqube:/opt/sonarqube
     ports:
       - 9900:9000
