@@ -1,19 +1,42 @@
-version : '3.8'
+version: '3.8'
 services:
-  nacos:
-    image: nacos/nacos-server:v2.2.1
+  nacos-standalone:
+    image: nacos/nacos-server:v2.2.3
     container_name: nacos
     network_mode: bridge
     restart: always
     environment:
-      - MODE=standalone
-      - SPRING_DATASOURCE_PLATFORM=mysql
-      - MYSQL_SERVICE_HOST=127.0.0.1
-      - MYSQL_SERVICE_PORT=3306
-      - MYSQL_SERVICE_DB_NAME=nacos
-      - MYSQL_SERVICE_USER=root
-      - MYSQL_SERVICE_PASSWORD=password
+      TZ: "Asia/Shanghai"
+      MODE: "standalone"
+      NACOS_SERVER_IP: "xx.xx.xx.xx"
+      NACOS_AUTH_ENABLE: "true"
+      NACOS_AUTH_IDENTITY_KEY: "nacos-test"
+      NACOS_AUTH_IDENTITY_VALUE: "nacos-test"
+      NACOS_AUTH_TOKEN: "SecretKey012345678901234567890123456789012345678901234567890123456789"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./data/nacos:/home/nacos
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+
+  nacos-mysql:
+    image: nacos/nacos-server:v2.2.3
+    container_name: nacos
+    network_mode: bridge
+    restart: always
+    environment:
+      TZ: "Asia/Shanghai"
+      MODE: "standalone"
+      SPRING_DATASOURCE_PLATFORM: "mysql"
+      MYSQL_SERVICE_HOST: "127.0.0.1"
+      MYSQL_SERVICE_PORT: "3306"
+      MYSQL_SERVICE_DB_NAME: "nacos"
+      MYSQL_SERVICE_USER: "root"
+      MYSQL_SERVICE_PASSWORD: "password"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./logs/:/home/nacos/logs
     ports:
       - "8848:8848"

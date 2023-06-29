@@ -1,16 +1,17 @@
 version: '3.8'
 services:
-  grafana-8-0-0:
-    image: grafana/grafana:8.0.0
-    container_name: grafana-8-0-0
+  grafana:
+    image: grafana/grafana:10.0.1
+    container_name: grafana
     restart: always
-    network_mode: 'bridge'
-    user: '472'
+    network_mode: bridge
+    user: "472"
     environment:
-      TZ: Asia/Shanghai
+      TZ: "Asia/Shanghai"
     ports:
       - 3000:3000
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./data/var/lib/grafana:/var/lib/grafana
       - ./data/etc/grafana:/etc/grafana
       - ./data/var/log/grafana:/var/log/grafana

@@ -1,15 +1,16 @@
-version: '3.3'
+version: '3.8'
 services:
   logstash:
-    image: docker.elastic.co/logstash/logstash:7.12.0
+    image: docker.elastic.co/logstash/logstash:8.8.1
     container_name: logstash
     restart: always
     network_mode: 'bridge'
     environment:
-      TZ: 'Asia/Shanghai'
+      TZ: "Asia/Shanghai"
       HTTP_HOST: 0.0.0.0
-      XPACK_MONITORING_ELASTICSEARCH_HOSTS: http://192.168.0.200:9200
+      XPACK_MONITORING_ELASTICSEARCH_HOSTS: http://elasticsearch:9200
     ports:
       - 9600:9600
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./data/logstash:/usr/share/logstash

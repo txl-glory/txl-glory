@@ -1,11 +1,13 @@
-version: '3.3'
+version: '3.8'
 services:
   es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.1
     container_name: es01
     restart: always
+    hostname: es01
     network_mode: 'bridge'
     environment:
+      - TZ="Asia/Shanghai"
       - node.name=es01
       - cluster.name=es-docker-cluster
       #- discovery.seed_hosts=es02,es03
@@ -17,6 +19,8 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - ./data01:/usr/share/elasticsearch/data
+      - /etc/localtime:/etc/localtime:ro
+      #- ./data01:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
+      - 9300:9300

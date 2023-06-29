@@ -1,13 +1,16 @@
-version: '3.3'
+version: '3.8'
 services:
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.9.3
+    image: docker.elastic.co/kibana/kibana:8.8.1
     container_name: kibana
     restart: always
     network_mode: 'bridge'
     environment:
+      TZ: "Asia/Shanghai"
       SERVER_NAME: Your SERVER_NAME
-      ELASTICSEARCH_HOSTS: http://192.168.0.200:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
       I18N_LOCALE: 'zh-CN'
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     ports:
       - 5601:5601
