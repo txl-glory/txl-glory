@@ -13,6 +13,7 @@ services:
       - "50000:50000"
     volumes:
       - ./data/var/jenkins_home:/var/jenkins_home
+      - ./data/jenkins:/usr/share/jenkins
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker-compose:/usr/bin/docker-compose
 
