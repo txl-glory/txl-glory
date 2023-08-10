@@ -13,11 +13,15 @@ services:
       - 1521:1521
       - 1520:8080
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./data:/u01/app/oracle
+
+####################      
 # 连接参数如下
-hostname: localhost
-port: 1521
-sid: xe
-service name: xe
-username: system
-password: oracle
+# hostname: localhost
+# port: 1521
+# sid: xe
+# service name: xe
+# username: system
+# password: oracle
+####################
