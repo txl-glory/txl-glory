@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  oracledb_exporter:
+    image: ghcr.io/iamseth/oracledb_exporter:0.5.1
+    container_name: oracledb_exporter
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: "Asia/Shanghai"
+      DATA_SOURCE_NAME: "oracle://serverip:username@password/xe"
+    ports:
+      - 9161:9161
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+
