@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  it-tools:
+    image: corentinth/it-tools:2023.11.2-7d94e11
+    container_name: it-tools
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: 'Asia/Shanghai'
+    ports:
+      - 8080:80

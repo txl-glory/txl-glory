@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  verdaccio:
+    image: verdaccio/verdaccio:v5.27.0
+    container_name: verdaccio
+    restart: always
+    network_mode: 'bridge'
+    environment:
+      TZ: 'Asia/Shanghai'
+    ports:
+      - 4873:4873
+    volumes:
+      - ./verdaccio:/verdaccio
