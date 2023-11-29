@@ -4,15 +4,25 @@ FROM jenkins/jenkins:latest
 # 镜像用户
 USER root
 
-# 复制node到容器
-ADD ./node-v14.15.0-linux-x64 /usr/local/share/node-v14.15.0-linux-x64
+# 修改apt源
+RUN echo 'deb https://mirrors.aliyun.com/debian/ bullseye main non-free contrib' > /etc/apt/sources.list && \
+    echo 'deb-src https://mirrors.aliyun.com/debian/ bullseye main non-free contrib' > /etc/apt/sources.list && \
+    echo 'deb https://mirrors.aliyun.com/debian-security/ bullseye-security main' > /etc/apt/sources.list && \
+    echo 'deb-src https://mirrors.aliyun.com/debian-security/ bullseye-security main' > /etc/apt/sources.list && \
+    echo 'deb https://mirrors.aliyun.com/debian/ bullseye-updates main non-free contrib' > /etc/apt/sources.list && \
+    echo 'deb-src https://mirrors.aliyun.com/debian/ bullseye-updates main non-free contrib' > /etc/apt/sources.list && \
+    echo 'deb https://mirrors.aliyun.com/debian/ bullseye-backports main non-free contrib' > /etc/apt/sources.list && \
+    echo 'deb-src https://mirrors.aliyun.com/debian/ bullseye-backports main non-free contrib' > /etc/apt/sources.list && \
+    apt-get update -y && \
+    apt-get clean
 
-# 复制maven到容器
-ADD ./apache-maven-3.6.3 /usr/local/share/apache-maven-3.6.3
+# 安装依赖
+RUN apt-get install -y p7zip-full curl
 
-# 置环境变量
-ENV PATH=$PATH:/usr/local/share/node-v14.15.0-linux-x64/bin
-ENV PATH=$PATH:/usr/local/share/apache-maven-3.6.3/bin
+# 安装nvm
+RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+
+RUN nvm install v14.21.3
 
 # 切换目录
 WORKDIR /usr/local/share

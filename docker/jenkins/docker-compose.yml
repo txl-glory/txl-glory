@@ -12,6 +12,7 @@ services:
       - "9003:8080"
       - "50000:50000"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./data/var/jenkins_home:/var/jenkins_home
       - ./data/jenkins:/usr/share/jenkins
       - /var/run/docker.sock:/var/run/docker.sock
