@@ -10,4 +10,7 @@ services:
     ports:
       - 4873:4873
     volumes:
-      - ./verdaccio:/verdaccio
+      - /etc/localtime:/etc/localtime:ro
+      - ./data/storage:/verdaccio/storage
+      - ./data/plugins:/verdaccio/plugins
+      - ./data/conf:/verdaccio/conf
