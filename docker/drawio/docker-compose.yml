@@ -1,0 +1,23 @@
+#This compose file adds draw.io to your stack
+version: '3.8'
+services:
+  drawio:
+    image: jgraph/drawio
+    container_name: drawio
+    restart: unless-stopped
+    environment:
+      PUBLIC_DNS: localhost
+      ORGANISATION_UNIT: fanty
+      ORGANISATION: fanty
+      CITY: xian
+      STATE: state
+      COUNTRY_CODE: china
+    ports:
+      - 8080:8080
+      - 8443:8443
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
