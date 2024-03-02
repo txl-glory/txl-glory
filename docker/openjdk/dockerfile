@@ -1,0 +1,8 @@
+# 基础镜像
+FROM  openjdk:11-jre
+
+# 镜像元数据
+LABEL maintainer="zhaosh"
+
+# 复制jar文件到路径
+COPY ./jdk-jar/*.jar /usr/local/openjdk-11/lib
