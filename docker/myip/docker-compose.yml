@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  myip:
+    image: jason5ng32/myip
+    container_name: myip
+    restart: always
+    environment:
+      TZ: 'Asia/Shanghai'
+    ports:
+      - 18966:18966
+#    volumes:
+#      - ./data:/data
