@@ -72,4 +72,4 @@ xxx@xxx:/etc/docker$ cat daemon.json
 docker stats --format "table {{.Container}}\t{{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}"
 ```
 
-npm install --registry=https://registry.npm.taobao.org
+npm install --registry=https://registry.npmmirror.com

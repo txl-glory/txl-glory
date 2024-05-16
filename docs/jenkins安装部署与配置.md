@@ -24,7 +24,7 @@ sudo apt-get install docker-compose
 cat /etc/docker/daemon.json
 {
         "registry-mirrors" : [
-                "https://rnxly1wc.mirror.aliyuncs.com",
+                "https://****.mirror.aliyuncs.com", # 修改成自己的阿里云地址
                 "https://docker.mirrors.ustc.edu.cn",
                 "http://hub-mirror.c.163.com",
                 "http://registry.docker-cn.com"
@@ -166,35 +166,35 @@ jenkins    |
 
 ### 3.1 访问jenkins http://192.168.1.212:9003
 <div align="center">
-<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/jenkins/login.png"  height="100%" width="100%">
+<img src="./images/jenkins/login.png"  height="100%" width="100%">
 </div>
 
 ### 3.2 jenkins的admin用户密码
 <div align="center">
-<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/jenkins/password.png"  height="100%" width="100%">
+<img src="./images/jenkins/password.png"  height="100%" width="100%">
 </div>
 
 ### 3.3 登录jenkins后转到新手入门页面，选择安装推荐插件
 <div align="center">
-<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/jenkins/xinshourumen.png"  height="100%" width="100%">
+<img src="./images/jenkins/xinshourumen.png"  height="100%" width="100%">
 </div>
 
 ### 3.4 等待插件安装完成
 <div align="center">
-<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/jenkins/chajian.png"  height="100%" width="100%">
+<img src="./images/jenkins/chajian.png"  height="100%" width="100%">
 </div>
 
 ### 3.5 插件安装完成会自动跳转到创建第一个用户页面，按照页面提示输入用户信息即可。
 <div align="center">
-<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/jenkins/user.png"  height="100%" width="100%">
+<img src="./images/jenkins/user.png"  height="100%" width="100%">
 </div>
 
 ### 3.6 配置jenkins根路径
 <div align="center">
-<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/jenkins/rootpath.png"  height="100%" width="100%">
+<img src="./images/jenkins/rootpath.png"  height="100%" width="100%">
 </div>
 
 ### 3.7 配置完成
 <div align="center">
-<img src="https://raw.githubusercontent.com/txl-glory/txl-glory/master/docs/images/jenkins/complete.png"  height="100%" width="100%">
+<img src="./images/jenkins/complete.png"  height="100%" width="100%">
 </div>
