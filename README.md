@@ -57,12 +57,22 @@ docker-compose --version
 ```shell script
 xxx@xxx:/etc/docker$ cat daemon.json
 {
+        "bip" : "10.10.10.1/24",
+        "default-address-pools" : [
+                {"base":"10.10.0.0/16","size":24}
+        ],
         "registry-mirrors" : [
                 "https://rnxly1wc.mirror.aliyuncs.com",
                 "https://docker.mirrors.ustc.edu.cn",
                 "http://hub-mirror.c.163.com",
                 "http://registry.docker-cn.com"
-        ]
+        ],
+        "log-driver": "json-file",
+        "log-opts": {
+                "max-size": "200m",
+                "max-file": "3",
+                "tag": "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+        }
 }
 ```
 
