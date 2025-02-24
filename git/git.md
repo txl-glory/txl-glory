@@ -99,6 +99,16 @@ git config credential.helper ‘cache –timeout=3600’
 git config --global --list
 ```
 
+## git 拉取所有远程分支
+
+```shell
+git clone xxx
+git branch -r | grep -v '\->' | while read remote; do git branch --track "${remote#origin/}" "$remote"; done
+git fetch --all
+git pull --all
+```
+
+
 # 常见问题处理
 
 ## fatal: early EOF fatal: index-pack failed
