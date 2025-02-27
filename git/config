@@ -19,9 +19,9 @@ Host codeup.aliyun.com
     PreferredAuthentications publickey
     IdentityFile ~/.ssh/id_rsa_codeup
 
-# yfhx-gitlab配置
-Host yfhx-gitlab
-    HostName 192.168.0.200
+# gitcode配置
+ Host gitcode.com
+    HostName gitcode.com
     User zhaosh
     PreferredAuthentications publickey
-    IdentityFile ~/.ssh/id_rsa
+    IdentityFile ~/.ssh/id_rsa_gitcode

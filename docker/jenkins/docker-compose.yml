@@ -1,22 +1,13 @@
-version: "3.8"
+version: '3.8'
 services:
   jenkins:
-    image: registry.cn-hangzhou.aliyuncs.com/txlhub/jenkins:1.0.0
+    image: jenkins/jenkins:2.414.1-lts-jdk11
     container_name: jenkins
     restart: always
-    network_mode: "bridge"
-    privileged: true
     environment:
-      TZ: "Asia/Shanghai"
+      TZ: Asia/Shanghai
     ports:
-      - "9003:8080"
+      - "8083:8080"
       - "50000:50000"
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ./data/var/jenkins_home:/var/jenkins_home
-      - ./data/jenkins:/usr/share/jenkins
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/bin/docker-compose:/usr/bin/docker-compose
-
-# 安装过程中会出现 Docker 数据卷 权限问题，用以下命令解决：
-# sudo chown -R 1000 ./data
+      - $PWD/data:/var/jenkins_home

@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17 # 使用LTS版本并指定JDK17基础
+    container_name: jenkins
+    restart: unless-stopped
+    user: "1000:1000" # 推荐使用非root用户运行
+    environment:
+      - TZ=Asia/Shanghai # 设置时区
+      - JAVA_OPTS=-Xmx2048m -Xms512m -Djenkins.install.runSetupWizard=false # JVM参数优化
+      - JENKINS_OPTS=--argumentsRealm.roles.user=admin --argumentsRealm.passwd.admin=admin # 禁用安装向导（生产环境需修改）
+    volumes:
+      - jenkins_data:/var/jenkins_home # 持久化数据卷
+      - /var/run/docker.sock:/var/run/docker.sock # 允许容器内使用Docker（按需启用）
+      - ./casc_configs:/var/jenkins_home/casc_configs # 配置即代码(Configuration-as-Code)
+    networks:
+      - jenkins-network
+    ports:
+      - "8080:8080"
+      - "50000:50000" # Agent通信端口
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/login" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          memory: 512M
+
+volumes:
+  jenkins_data:
+    name: jenkins_data # 显式命名卷方便管理
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /path/to/your/storage # 指定物理存储路径
+
+networks:
+  jenkins-network:
+    driver: bridge
+    attachable: true
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24 # 指定专用子网
