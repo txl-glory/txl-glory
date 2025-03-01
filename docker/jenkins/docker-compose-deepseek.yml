@@ -1,0 +1,55 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17  # 官方镜像指定版本
+    container_name: jenkins
+    restart: unless-stopped        # 异常退出自动重启
+    user: root                     # 避免权限问题（生产环境建议使用非root用户+权限适配）
+    environment:
+      - JAVA_OPTS=-Dhudson.footerURL=http://39.150.6.61 -Xmx10000m -Xms512m  # JVM参数
+      - JENKINS_OPTS=--httpPort=60000  # 监听端口
+      - TZ=Asia/Shanghai           # 时区设置
+      - JENKINS_SLAVE_AGENT_PORT=60001  # Agent端口
+      - JENKINS_UC=https://mirrors.aliyun.com/jenkins   # 强制使用国内源
+      - JENKINS_UC_DOWNLOAD=https://mirrors.aliyun.com/jenkins  # 强制使用国内源
+      - JENKINS_ADMIN_ID=system    # 可选：自定义管理员账号
+      - JENKINS_ADMIN_PASSWORD=yourpassword
+    ports:
+      - "60000:60000"                # Web界面端口
+      - "60001:60001"              # Agent通信端口
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./jenkins_home:/var/jenkins_home  # 数据持久化
+      - /var/run/docker.sock:/var/run/docker.sock  # 允许容器内使用Docker（按需启用）
+      - ./custom-plugins:/usr/share/jenkins/ref/plugins/  # 自定义插件预安装目录
+    networks:
+      - jenkins_network
+    ulimits:                       # 资源限制
+      nofile:
+        soft: 65535
+        hard: 65535
+    healthcheck:                   # 健康检查
+      test: ["CMD", "curl", "-f", "http://localhost:60000/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  jenkins_network:                 # 专用网络隔离
+    external: true
+    # driver: bridge
+    # ipam:                       # 可选：自定义IP段
+    #   config:
+    #     - subnet: 172.20.0.0/24
+
+# 首次启动
+# 创建目录并授权（仅Linux需执行）
+# mkdir -p ./jenkins_home && chown -R 1000:1000 ./jenkins_home
+
+# 启动服务
+# docker-compose up -d
+
+# 查看初始化密码
+# docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
