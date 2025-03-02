@@ -22,8 +22,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./jenkins_home:/var/jenkins_home  # 数据持久化
-      - /var/run/docker.sock:/var/run/docker.sock  # 允许容器内使用Docker（按需启用）
-      - ./custom-plugins:/usr/share/jenkins/ref/plugins/  # 自定义插件预安装目录
+      - /var/run/docker.sock:/var/run/docker.sock  # 允许容器内使用docker
+      - /usr/bin/docker:/usr/bin/docker
     networks:
       - jenkins_network
     ulimits:                       # 资源限制
