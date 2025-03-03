@@ -4,6 +4,7 @@ services:
     image: ghcr.io/gethomepage/homepage:v0.8.13
     container_name: homepage
     restart: unless-stoppe
+    network_mode: "bridge"
     environment:
       PUID: 1000 # optional, your user id
       PGID: 1000 # optional, your group id
