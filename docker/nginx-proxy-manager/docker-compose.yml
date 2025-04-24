@@ -1,19 +1,45 @@
 version: '3.8'
+
 services:
-  nginx-proxy-manager:
-    image: 'docker.io/jc21/nginx-proxy-manager:2.12.3'
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
     container_name: nginx-proxy-manager
-    restart: always
-    network_mode: 'bridge'
-    environment:
-      TZ: 'Asia/Shanghai'
+    restart: unless-stopped
     ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
+      - '80:80'       # HTTP 端口
+      - '81:81'       # 管理界面端口
+      - '443:443'     # HTTPS 端口
+    environment:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm_password"  # 替换为你的数据库密码
+      DB_MYSQL_NAME: "npm"
     volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
+      - ./data:/data         # 持久化配置和 SSL 证书
+      - ./letsencrypt:/etc/letsencrypt  # 持久化 Let's Encrypt 证书
+    depends_on:
+      - db
+    networks:
+      - npm-network
+
+  db:
+    image: 'mariadb:latest'
+    container_name: npm-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root_password'  # 替换为你的 root 密码
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm_password'        # 替换为你的数据库密码
+    volumes:
+      - ./mysql:/var/lib/mysql  # 持久化数据库数据
+    networks:
+      - npm-network
+
+networks:
+  npm-network:
+    driver: bridge
 
 
 # Default Admin User:
