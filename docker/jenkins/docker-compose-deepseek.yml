@@ -9,7 +9,7 @@ services:
     user: root                     # 避免权限问题（生产环境建议使用非root用户+权限适配）
     environment:
       - JAVA_OPTS=-Dhudson.footerURL=http://DomainName -Xmx10000m -Xms512m  # JVM参数
-      - JENKINS_OPTS=--httpPort=60000  # 监听端口
+      - JENKINS_OPTS=--httpPort=60000 --prefix=/jenkins # 监听端口 url前缀
       - TZ=Asia/Shanghai           # 时区设置
       - JENKINS_SLAVE_AGENT_PORT=60001  # Agent端口
       - JENKINS_UC=https://mirrors.aliyun.com/jenkins   # 强制使用国内源
