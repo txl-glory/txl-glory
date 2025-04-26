@@ -16,6 +16,7 @@ services:
       - JENKINS_UC_DOWNLOAD=https://mirrors.aliyun.com/jenkins  # 强制使用国内源
       - JENKINS_ADMIN_ID=system    # 可选：自定义管理员账号
       - JENKINS_ADMIN_PASSWORD=yourpassword
+      - PREFIX=jenkins
     ports:
       - "60000:60000"                # Web界面端口
       - "60001:60001"              # Agent通信端口
@@ -31,7 +32,7 @@ services:
         soft: 65535
         hard: 65535
     healthcheck:                   # 健康检查
-      test: ["CMD", "curl", "-f", "http://localhost:60000/login"]
+      test: ["CMD", "curl", "-f", "http://localhost:60000/jenkins/login"]
       interval: 30s
       timeout: 10s
       retries: 5
