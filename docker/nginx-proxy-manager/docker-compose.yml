@@ -4,6 +4,7 @@ services:
   nginx-proxy-manager:
     image: 'jc21/nginx-proxy-manager:latest'
     container_name: nginx-proxy-manager
+    privileged: true
     restart: always
     ports:
       # These ports are in format <host-port>:<container-port>
@@ -19,6 +20,8 @@ services:
       DB_MYSQL_USER: "npm"
       DB_MYSQL_PASSWORD: "npm"
       DB_MYSQL_NAME: "npm"
+      PUID: 1000
+      PGID: 1000
       # Uncomment this if IPv6 is not enabled on your host
       # DISABLE_IPV6: 'true'
     volumes:
