@@ -25,6 +25,7 @@ services:
       - ./jenkins_home:/var/jenkins_home  # 数据持久化
       - /var/run/docker.sock:/var/run/docker.sock  # 允许容器内使用docker
       - /usr/bin/docker:/usr/bin/docker
+      - /usr/lib/jvm:/usr/lib/jvm:ro
     networks:
       - jenkins_network
     ulimits:                       # 资源限制
