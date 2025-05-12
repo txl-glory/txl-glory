@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  jimureport-mysql:
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    restart: always
+    container_name: jimureport-mysql
+    image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/jimureport-mysql:1.9.3
+    command:
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+      --max_allowed_packet=512M
+    volumes:
+      - ./mysql/data:/var/lib/mysql    # 持久化数据，确保本地路径存在
+    ports:
+      - 3306:3306
+    networks:
+      - fty-yunrui
+
+  jimureport:
+    container_name: jimureport
+    image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/jimureport:1.9.3
+    volumes:
+      - ./jimureport/uploads:/opt/jimureport/uploads  # 文件存储持久化
+    ports:
+      - 8085:8085
+    depends_on:
+      - jimureport-mysql  # 明确依赖MySQL服务
+    networks:
+      - fty-yunrui
+
+networks:
+  fty-yunrui:                 # 专用网络隔离
+    external: true
