@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  jimureport-db:
+    image: mysql:8.0.34
+    container_name: jimureport-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: jimureport
+      MYSQL_USER: jimuuser
+      MYSQL_PASSWORD: ${DB_USER_PASSWORD}
+      TZ: Asia/Shanghai
+    command: 
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --explicit_defaults_for_timestamp=1
+      --max_connections=1000
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./mysql/conf.d:/etc/mysql/conf.d
+    networks:
+      - jimu-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u$${MYSQL_USER}", "-p$${MYSQL_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+
+  jimureport-web:
+    image: jeecgboot/jimureport:1.6.2
+    container_name: jimureport-web
+    restart: unless-stopped
+    depends_on:
+      jimureport-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://jimureport-db:3306/jimureport?useSSL=false&characterEncoding=utf8
+      SPRING_DATASOURCE_USERNAME: jimuuser
+      SPRING_DATASOURCE_PASSWORD: ${DB_USER_PASSWORD}
+      TZ: Asia/Shanghai
+      JAVA_OPTS: -Xmx1g -Xms1g -XX:+UseG1GC -Dfile.encoding=UTF-8
+    volumes:
+      - ./logs:/home/jimureport/logs
+      - ./config:/home/jimureport/config
+    ports:
+      - "8080:8080"
+    networks:
+      - jimu-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8080/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+
+volumes:
+  db_data:
+
+networks:
+  jimu-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
