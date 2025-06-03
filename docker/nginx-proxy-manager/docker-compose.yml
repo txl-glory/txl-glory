@@ -1,12 +1,49 @@
 version: '3.8'
+
 services:
   nginx-proxy-manager:
-    image: 'docker.io/jc21/nginx-proxy-manager:2.11.2'
-    restart: unless-stopped
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    privileged: true
+    restart: always
     ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
+      # These ports are in format <host-port>:<container-port>
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+      # Add any other Stream port you want to expose
+      # - '21:21' # FTP
+    environment:
+      # Mysql/Maria connection parameters:
+      DB_MYSQL_HOST: "mariadb-nginx-proxy-manager"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
+      PUID: 1000
+      PGID: 1000
+      # Uncomment this if IPv6 is not enabled on your host
+      # DISABLE_IPV6: 'true'
     volumes:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
+    depends_on:
+      - mariadb-nginx-proxy-manager
+
+  mariadb-nginx-proxy-manager:
+    image: 'jc21/mariadb-aria:latest'
+    container_name: mariadb-nginx-proxy-manager
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+      MARIADB_AUTO_UPGRADE: '1'
+    volumes:
+      - ./mysql:/var/lib/mysql
+
+
+# Default Admin User:
+## Email:    admin@example.com
+## Password: changeme
