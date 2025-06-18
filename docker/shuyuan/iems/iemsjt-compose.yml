@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   iems-jt-oracle11g:
     image: registry.cn-hangzhou.aliyuncs.com/cnnit/iems-jt-oracle:11g
@@ -6,7 +6,7 @@ services:
     privileged: true
     restart: always
     environment:
-      TZ: 'Asia/Shanghai'
+      TZ: "Asia/Shanghai"
       DBCA_TOTAL_MEMORY: 16192
     ports:
       - 1521:1521
@@ -17,8 +17,8 @@ services:
     container_name: iems-jt-system
     restart: always
     environment:
-      TZ: 'Asia/Shanghai'
-      DATABASE_HOST: 'iems-jt-oracle11g'
+      TZ: "Asia/Shanghai"
+      DATABASE_HOST: "iems-jt-oracle11g"
     ports:
       - 8081:8081
     links:
@@ -32,8 +32,8 @@ services:
     container_name: iems-jt-nginx
     restart: always
     environment:
-      TZ: 'Asia/Shanghai'
-      NGINX_PORT: '9091'
+      TZ: "Asia/Shanghai"
+      NGINX_PORT: "9091"
     ports:
       - 9091:9091
     links:
