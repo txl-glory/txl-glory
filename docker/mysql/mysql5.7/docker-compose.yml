@@ -11,9 +11,10 @@ services:
     command:
       --character-set-server=utf8
       --max_connections=2000
+      --lower_case_table_names=1
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./data/var/lib/mysql:/var/lib/mysql
       - ./data/etc/mysql:/etc/mysql
-      - /etc/localtime:/etc/localtime:ro
     ports:
       - 3306:3306

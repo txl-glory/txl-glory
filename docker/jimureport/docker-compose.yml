@@ -1,36 +1,61 @@
 version: '3.8'
-services:
-  jimureport-mysql:
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-    restart: always
-    container_name: jimureport-mysql
-    image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/jimureport-mysql:1.9.3
-    command:
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_general_ci
-      --explicit_defaults_for_timestamp=true
-      --lower_case_table_names=1
-      --max_allowed_packet=512M
-    volumes:
-      - ./mysql/data:/var/lib/mysql    # 持久化数据，确保本地路径存在
-    ports:
-      - 3306:3306
-    networks:
-      - fty-yunrui
 
-  jimureport:
-    container_name: jimureport
-    image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/jimureport:1.9.3
+services:
+  jimureport-db:
+    image: mysql:8.0.34
+    container_name: jimureport-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password.com
+      MYSQL_DATABASE: jimureport
+      MYSQL_USER: jimuuser
+      MYSQL_PASSWORD: password.com
+      TZ: Asia/Shanghai
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --explicit_defaults_for_timestamp=1
+      --max_connections=1000
     volumes:
-      - ./jimureport/uploads:/opt/jimureport/uploads  # 文件存储持久化
+      - ./db_data:/var/lib/mysql
+      - ./mysql/conf.d:/etc/mysql/conf.d
     ports:
-      - 8085:8085
-    depends_on:
-      - jimureport-mysql  # 明确依赖MySQL服务
+      - "3306:3306"
     networks:
       - fty-yunrui
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u$${MYSQL_USER}", "-p$${MYSQL_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  jimureport-web:
+    image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/jimureport:1.9.3
+    container_name: jimureport-web
+    restart: unless-stopped
+    depends_on:
+      jimureport-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://jimureport-db:3306/jimureport?useSSL=false&characterEncoding=utf8
+      SPRING_DATASOURCE_USERNAME: jimuuser
+      SPRING_DATASOURCE_PASSWORD: password.com
+      TZ: Asia/Shanghai
+      JAVA_OPTS: -Xmx1g -Xms1g -XX:+UseG1GC -Dfile.encoding=UTF-8
+    volumes:
+      - ./logs:/home/jimureport/logs
+      - ./config:/home/jimureport/config
+    ports:
+      - "8085:8085"
+    networks:
+      - fty-yunrui
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8085/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 networks:
-  fty-yunrui:                 # 专用网络隔离
+  fty-yunrui:
     external: true

@@ -1,0 +1,58 @@
+version: '3.3'
+
+services:
+
+# mysql service for zentao
+  zentao-mariadb:
+    image: mariadb:10.6
+    container_name: zentao-mariadb
+    network_mode: 'bridge'
+    restart: always
+    ports:
+      - '3307:3306'
+    volumes:
+      - ./zentao_db:/var/lib/mysql
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=password.com
+      - MYSQL_DATABASE=zentao
+    networks:
+      - txl-fty
+
+# redis service for zentao
+#  zentao-redis:
+#    image: redis:3.2.12-alpine3.8
+#    container_name: zentao-redis
+#    networks:
+#      - zentao-net
+
+# zentao service
+  zentao:
+    image: hub.zentao.net/app/zentao:21.2
+    container_name: zentao
+    network_mode: 'bridge'
+    restart: always
+    ports:
+      - '61000:80'
+    volumes:
+      - ./zentao_data:/data
+    depends_on:
+      - zentao-mariadb
+    environment:
+      - TZ=Asia/Shanghai
+      - ZT_MYSQL_HOST=zentao-mariadb
+      - ZT_MYSQL_PORT=3307
+      - ZT_MYSQL_USER=root
+      - ZT_MYSQL_PASSWORD=password.com
+      - ZT_MYSQL_DB=zentao
+      - PHP_MAX_EXECUTION_TIME=120
+      - PHP_MAX_INPUT_VARS=2000
+      - PHP_MEMORY_LIMIT=512M
+      - PHP_POST_MAX_SIZE=512M
+      - PHP_UPLOAD_MAX_FILESIZE=512M
+    networks:
+      - txl-fty
+
+networks:
+  txl-fty:
+    external: true

@@ -6,10 +6,11 @@ services:
     restart: unless-stoppe
     network_mode: "bridge"
     environment:
+      TZ: Asia/Shanghai
       PUID: 1000 # optional, your user id
       PGID: 1000 # optional, your group id
     ports:
       - 3000:3000
     volumes:
       - ./config:/app/config # Make sure your local config directory exists
-      - /var/run/docker.sock:/var/run/docker.sock:ro # optional, for docker integrations
+      - /var/run/docker.sock:/var/run/docker.sock # optional, for docker integrations
