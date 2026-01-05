@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  timescaledb-pg17:
+    image: timescale/timescaledb:2.24.0-pg17
+    container_name: timescaledb-pg17
+    restart: always
+    network_mode: bridge
+    environment:
+      TZ: Asia/Shanghai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password.com
+      POSTGRES_DB: postgres
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql
+      # - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backups:/backups
+    ports:
+      - 5432:5432
+    # 健康检查
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
