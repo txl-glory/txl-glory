@@ -12,6 +12,7 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_INITDB_ARGS: --encoding=UTF-8
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./data/postgresql:/var/lib/postgresql
       # - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./backups:/backups
